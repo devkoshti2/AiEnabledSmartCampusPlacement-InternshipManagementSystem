@@ -7,7 +7,7 @@ load_dotenv()
 class Settings:
     DB_HOST = os.getenv("DB_HOST", "localhost")
     DB_USER = os.getenv("DB_USER", "root")
-    DB_PASSWORD = os.getenv("DB_PASSWORD", "your-db-password")
+    DB_PASSWORD = os.getenv("DB_PASSWORD", "dev02koshti0227")
     DB_NAME = os.getenv("DB_NAME", "placement_db")
     SECRET_KEY = os.getenv("SECRET_KEY", "your-secret-key-here-change-this-in-production")
     ALGORITHM = os.getenv("ALGORITHM", "HS256")

@@ -30,6 +30,19 @@ backend/.env
 .env.development
 
 # ---------------------------
+# Configuration Files (Sensitive)
+# ---------------------------
+backend/app/config.py
+backend/app/database.py
+backend/app/config_local.py
+backend/app/settings_local.py
+config.local.*
+.local.
+settings.local.py
+credentials.json
+client_secret.json
+
+# ---------------------------
 # IDE / Editor files
 # ---------------------------
 .vscode/
@@ -130,7 +143,7 @@ frontend/.cache/
 # ---------------------------
 .ipynb_checkpoints/
 *.ipynb
-!*.ipynb  # if you want to keep notebooks, remove this line
+!*.ipynb
 
 # ---------------------------
 # OS files
@@ -211,20 +224,11 @@ backend/app/ai/models/*.joblib
 .\#*
 
 # ---------------------------
-# Configuration files with secrets
-# ---------------------------
-config.local.*
-.local.
-settings.local.py
-credentials.json
-client_secret.json
-
-# ---------------------------
 # Reports / Exports (if any)
 # ---------------------------
 *.pdf
 *.xlsx
 *.csv
-!sample/*.csv  # if you have sample data to commit
+!sample/*.csv
 reports/
 exports/

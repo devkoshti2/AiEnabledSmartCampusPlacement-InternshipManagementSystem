@@ -12,7 +12,7 @@ def get_db_connection():
         connection = mysql.connector.connect(
             host=settings.DB_HOST or "localhost",
             user=settings.DB_USER or "root",
-            password=settings.DB_PASSWORD or "your-password",
+            password=settings.DB_PASSWORD or "dev02koshti0227",
             database=settings.DB_NAME or "placement_db",
             # port=settings.DB_PORT or 3306
         )
