@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Email | Placement System</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/placement-theme.css">
+    
+    <style>
+        body {
+            background: linear-gradient(135deg, #0A1929, #1A2A3A);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+        }
+        .verify-box {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            max-width: 450px;
+            margin: 0 auto;
+        }
+        .otp-input {
+            width: 60px;
+            height: 60px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            border: 2px solid #E0E0E0;
+            border-radius: 10px;
+            margin: 0 5px;
+        }
+        .otp-input:focus {
+            border-color: #F0B90B;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(240,185,11,0.1);
+        }
+        .timer {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #0A1929;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="verify-box">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-envelope-open-text fa-3x text-secondary"></i>
+                        <h3 class="mt-3">Verify Your Email</h3>
+                        <p class="text-muted" id="emailDisplay">We've sent an OTP to your email</p>
+                    </div>
+                    
+                    <div id="message"></div>
+                    
+                    <div class="text-center mb-4">
+                        <div class="d-flex justify-content-center">
+                            <input type="text" class="otp-input" id="otp1" maxlength="1" onkeyup="moveToNext(this, 'otp2')">
+                            <input type="text" class="otp-input" id="otp2" maxlength="1" onkeyup="moveToNext(this, 'otp3')">
+                            <input type="text" class="otp-input" id="otp3" maxlength="1" onkeyup="moveToNext(this, 'otp4')">
+                            <input type="text" class="otp-input" id="otp4" maxlength="1" onkeyup="moveToNext(this, 'otp5')">
+                            <input type="text" class="otp-input" id="otp5" maxlength="1" onkeyup="moveToNext(this, 'otp6')">
+                            <input type="text" class="otp-input" id="otp6" maxlength="1">
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <span class="timer" id="timer">10:00</span>
+                        <button class="btn btn-link" id="resendBtn" onclick="resendOTP()" disabled>Resend OTP</button>
+                    </div>
+                    
+                    <button class="btn btn-primary w-100 py-2" id="verifyBtn" onclick="verifyOTP()">
+                        <span id="btnText">Verify Email</span>
+                        <span id="btnSpinner" class="spinner-border spinner-border-sm d-none"></span>
+                    </button>
+                    
+                    <div class="text-center mt-3">
+                        <a href="login.html" class="text-secondary">Back to Login</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        // URL se email nikaalo
+        const urlParams = new URLSearchParams(window.location.search);
+        const email = urlParams.get('email') || localStorage.getItem('pendingEmail');
+        
+        if (email) {
+            document.getElementById('emailDisplay').textContent = `OTP sent to ${email}`;
+            localStorage.setItem('pendingEmail', email);
+        } else {
+            // Agar email nahi hai to register page par bhejo
+            window.location.href = 'register.html';
+        }
+        
+        // Timer variables
+        let timeLeft = 600; // 10 minutes in seconds
+        let timerInterval;
+        
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                document.getElementById('timer').textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    document.getElementById('resendBtn').disabled = false;
+                    document.getElementById('timer').textContent = '00:00';
+                    showNotification('OTP expired. Please resend.', 'warning');
+                }
+            }, 1000);
+        }
+        
+        startTimer();
+        
+        // Move to next input
+        function moveToNext(current, nextId) {
+            if (current.value.length >= 1) {
+                document.getElementById(nextId)?.focus();
+            }
+        }
+        
+        // Get full OTP
+        function getOTP() {
+            return document.getElementById('otp1').value +
+                   document.getElementById('otp2').value +
+                   document.getElementById('otp3').value +
+                   document.getElementById('otp4').value +
+                   document.getElementById('otp5').value +
+                   document.getElementById('otp6').value;
+        }
+        
+        // Verify OTP
+        async function verifyOTP() {
+            const otp = getOTP();
+            
+            if (otp.length < 6) {
+                showNotification('Please enter complete OTP', 'warning');
+                return;
+            }
+            
+            const btn = document.getElementById('verifyBtn');
+            const btnText = document.getElementById('btnText');
+            const spinner = document.getElementById('btnSpinner');
+            
+            btn.disabled = true;
+            btnText.classList.add('d-none');
+            spinner.classList.remove('d-none');
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/otp/verify?email=${encodeURIComponent(email)}&otp=${otp}&purpose=registration`, {
+                    method: 'POST'
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showNotification('Email verified successfully!', 'success');
+                    clearInterval(timerInterval);
+                    localStorage.removeItem('pendingEmail');
+                    
+                    // Login page par email pre-fill ke saath redirect
+                    setTimeout(() => {
+                        window.location.href = `login.html?email=${encodeURIComponent(email)}`;
+                    }, 2000);
+                } else {
+                    showNotification(data.detail || 'Invalid OTP', 'danger');
+                }
+            } catch (error) {
+                showNotification('Network error', 'danger');
+            } finally {
+                btn.disabled = false;
+                btnText.classList.remove('d-none');
+                spinner.classList.add('d-none');
+            }
+        }
+        
+        // Resend OTP
+        async function resendOTP() {
+            const resendBtn = document.getElementById('resendBtn');
+            resendBtn.disabled = true;
+            resendBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Sending...';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/otp/resend-verification?email=${encodeURIComponent(email)}`, {
+                    method: 'POST'
+                });
+                
+                if (response.ok) {
+                    showNotification('New OTP sent!', 'success');
+                    
+                    // Reset timer
+                    timeLeft = 600;
+                    startTimer();
+                    
+                    // Clear OTP fields
+                    for (let i = 1; i <= 6; i++) {
+                        document.getElementById(`otp${i}`).value = '';
+                    }
+                    document.getElementById('otp1').focus();
+                } else {
+                    const data = await response.json();
+                    showNotification(data.detail || 'Failed to resend OTP', 'danger');
+                }
+            } catch (error) {
+                showNotification('Network error', 'danger');
+            } finally {
+                resendBtn.disabled = true;
+                resendBtn.innerHTML = 'Resend OTP';
+            }
+        }
+        
+        // Enter key press
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                verifyOTP();
+            }
+        });
+    </script>
+</body>
+</html>

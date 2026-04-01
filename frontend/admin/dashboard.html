@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Placement System</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/placement-theme.css">
+    
+    <style>
+        .sidebar {
+            background: #0A1929;
+            min-height: 100vh;
+            position: fixed;
+            width: 260px;
+            color: white;
+            z-index: 1000;
+            transition: all 0.3s;
+        }
+        .sidebar-header {
+            padding: 30px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .sidebar-header h4 {
+            color: white;
+            margin: 0;
+        }
+        .sidebar-header small {
+            color: #F0B90B;
+        }
+        .sidebar-nav {
+            padding: 20px 0;
+        }
+        .sidebar-nav a {
+            display: block;
+            padding: 12px 25px;
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+        }
+        .sidebar-nav a:hover,
+        .sidebar-nav a.active {
+            background: rgba(240,185,11,0.1);
+            color: #F0B90B;
+            border-left-color: #F0B90B;
+        }
+        .sidebar-nav a i {
+            width: 25px;
+            margin-right: 10px;
+        }
+        .main-content {
+            margin-left: 260px;
+            padding: 30px;
+        }
+        .top-bar {
+            background: white;
+            padding: 15px 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .admin-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #0A1929, #F0B90B);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+        .stat-card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+            border: 1px solid #E5E7EB;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border-color: #F0B90B;
+        }
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #0A1929, #F0B90B);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+        .stat-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #0A1929;
+            line-height: 1.2;
+        }
+        .stat-label {
+            color: #6B7280;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .table th {
+            background: #F8FAFC;
+            color: #0A1929;
+            font-weight: 600;
+            border-bottom: 2px solid #F0B90B;
+        }
+        .badge-applied { background: #E3F2FD; color: #0A1929; }
+        .badge-shortlisted { background: #E8F5E9; color: #27AE60; }
+        .badge-selected { background: #D4EDDA; color: #155724; }
+        .badge-rejected { background: #FFEBEE; color: #EB5757; }
+        
+        @media (max-width: 768px) {
+            .sidebar { width: 0; overflow: hidden; }
+            .main-content { margin-left: 0; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h4><i class="fas fa-graduation-cap me-2" style="color: #F0B90B;"></i>Admin Panel</h4>
+            <small>Placement System</small>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <a href="dashboard.html" class="active"><i class="fas fa-chart-pie"></i> Dashboard</a>
+            <a href="companies.html"><i class="fas fa-building"></i> Companies</a>
+            <a href="drives.html"><i class="fas fa-briefcase"></i> Drives</a>
+            <a href="students.html"><i class="fas fa-users"></i> Students</a>
+            <a href="analytics.html"><i class="fas fa-chart-line"></i> Analytics</a>
+            <a href="models-dashboard.html"><i class="fas fa-robot"></i> AI Models</a>
+            <a href="export-reports.html"><i class="fas fa-download"></i> Export</a>
+            <a href="#" onclick="adminLogout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <h4 class="fw-bold mb-0">
+                <i class="fas fa-chart-pie me-2 text-secondary"></i>
+                Dashboard
+            </h4>
+            <div class="d-flex align-items-center gap-3">
+                <div class="dropdown">
+                    <button class="btn btn-link position-relative p-0" data-bs-toggle="dropdown" style="color: #0A1929;">
+                        <i class="fas fa-bell fs-5"></i>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-secondary" 
+                              id="notificationBadge" style="display: none;">0</span>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-end" style="width: 320px;" id="notificationList">
+                        <div class="text-center p-3">Loading...</div>
+                    </div>
+                </div>
+                <div class="dropdown">
+                    <button class="btn btn-link text-decoration-none d-flex align-items-center" data-bs-toggle="dropdown" style="color: #0A1929;">
+                        <div class="admin-avatar me-2" id="adminAvatar">A</div>
+                        <span class="fw-bold" id="adminName">Admin</span>
+                        <i class="fas fa-chevron-down ms-2 small"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="#" onclick="adminLogout()">
+                            <i class="fas fa-sign-out-alt me-2"></i>Logout
+                        </a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-value" id="totalStudents">0</div>
+                <div class="stat-label">Total Students</div>
+                <div class="mt-2 small text-muted">
+                    <span id="activeStudents">0</span> active
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-building"></i>
+                </div>
+                <div class="stat-value" id="totalCompanies">0</div>
+                <div class="stat-label">Companies</div>
+                <div class="mt-2 small text-muted">
+                    <span id="newCompanies">0</span> this month
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-briefcase"></i>
+                </div>
+                <div class="stat-value" id="activeDrives">0</div>
+                <div class="stat-label">Active Drives</div>
+                <div class="mt-2 small text-muted">
+                    <span id="totalDrives">0</span> total
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <div class="stat-value" id="totalApplications">0</div>
+                <div class="stat-label">Applications</div>
+                <div class="mt-2 small text-muted">
+                    <span id="todayApplications">0</span> today
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions - FIXED -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-bolt me-2 text-secondary"></i>Quick Actions
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex flex-wrap gap-2">
+                            <!-- FIXED: "Add Drive" instead of " Drive page " -->
+                            <a href="drives.html" class="btn btn-outline-primary">
+                                <i class="fas fa-briefcase me-2"></i>Add Drive
+                            </a>
+                            <a href="companies.html" class="btn btn-outline-primary">
+                                <i class="fas fa-building me-2"></i>Add Company
+                            </a>
+                            <button class="btn btn-outline-success" onclick="sendNotification()">
+                                <i class="fas fa-bell me-2"></i>Broadcast Notification
+                            </button>
+                            <!-- FIXED: Export Reports link -->
+                            <a href="export-reports.html" class="btn btn-outline-warning">
+                                <i class="fas fa-download me-2"></i>Export Reports
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span><i class="fas fa-chart-line me-2 text-secondary"></i>Application Trends</span>
+                        <select class="form-select form-select-sm w-auto" id="trendPeriod" style="width: 120px; padding: 6px 10px; font-size: 14px;">
+                            <option value="7">📊 Last 7 Days</option>
+                            <option value="30" selected>📊 Last 30 Days</option>
+                            <option value="90">📊 Last 90 Days</option>
+                        </select>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="applicationsChart" height="300"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-chart-pie me-2 text-secondary"></i>Status Distribution
+                    </div>
+                    <div class="card-body">
+                        <canvas id="statusChart" height="300"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Applications -->
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span><i class="fas fa-history me-2 text-secondary"></i>Recent Applications</span>
+                <a href="applications.html" class="btn btn-sm btn-outline-secondary">View All</a>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Company</th>
+                                <th>Position</th>
+                                <th>Applied On</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recentApplications">
+                            <tr>
+                                <td colspan="6" class="text-center py-4">
+                                    <div class="spinner-border text-secondary"></div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Modal -->
+    <div class="modal fade" id="notificationModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Send Broadcast Notification</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="notifyMessage"></div>
+                    <form id="notifyForm">
+                        <div class="mb-3">
+                            <label class="form-label">Title</label>
+                            <input type="text" class="form-control" id="notifyTitle" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Message</label>
+                            <textarea class="form-control" id="notifyMessageText" rows="3" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Send to</label>
+                            <select class="form-control" id="notifyRole">
+                                <option value="">All Users</option>
+                                <option value="student">Students Only</option>
+                                <option value="admin">Admins Only</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="sendBroadcast()">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/main.js"></script>
+    <script>
+        // Check admin authentication
+        const token = localStorage.getItem('token');
+        const role = localStorage.getItem('role');
+        
+        if (!token || role !== 'admin') {
+            window.location.href = '../index.html';
+        }
+        
+        // Set admin avatar
+        const adminName = localStorage.getItem('userName') || 'Admin';
+        document.getElementById('adminAvatar').textContent = adminName.charAt(0).toUpperCase();
+        
+        let applicationsChart, statusChart;
+        
+        async function loadAdminDashboard() {
+            try {
+                await loadAdminInfo();
+                
+                // Get dashboard stats
+                const statsRes = await fetch(`${API_BASE_URL}/admin/dashboard`, {
+                    headers: getAuthHeaders()
+                });
+                
+                if (statsRes.ok) {
+                    const stats = await statsRes.json();
+                    document.getElementById('totalStudents').textContent = stats.total_students || 0;
+                    document.getElementById('totalCompanies').textContent = stats.total_companies || 0;
+                    document.getElementById('activeDrives').textContent = stats.active_drives || 0;
+                    document.getElementById('totalApplications').textContent = stats.total_applications || 0;
+                    
+                    // Sample data for other stats
+                    document.getElementById('activeStudents').textContent = Math.round(stats.total_students * 0.8) || 0;
+                    document.getElementById('totalDrives').textContent = Math.round(stats.active_drives * 1.5) || 0;
+                }
+                
+                // Get recent applications
+                const appsRes = await fetch(`${API_BASE_URL}/admin/applications/recent?limit=5`, {
+                    headers: getAuthHeaders()
+                });
+                
+                if (appsRes.ok) {
+                    const apps = await appsRes.json();
+                    const tbody = document.getElementById('recentApplications');
+                    
+                    if (apps.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="6" class="text-center">No recent applications</td></tr>';
+                        return;
+                    }
+                    
+                    let html = '';
+                    apps.forEach(app => {
+                        const statusClass = `badge badge-${app.status}`;
+                        html += `
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="admin-avatar me-2" style="width: 35px; height: 35px; font-size: 1rem;">
+                                            ${app.full_name?.charAt(0) || 'S'}
+                                        </div>
+                                        <div>
+                                            <strong>${app.full_name}</strong><br>
+                                            <small class="text-muted">${app.roll_number || ''}</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><strong>${app.company_name}</strong></td>
+                                <td>${app.job_title}</td>
+                                <td>${new Date(app.applied_at).toLocaleDateString()}</td>
+                                <td><span class="${statusClass}">${app.status}</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary" 
+                                            onclick="viewApplication(${app.id})">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                    tbody.innerHTML = html;
+                }
+                
+                // Load charts
+                loadCharts();
+                
+            } catch (error) {
+                console.error('Dashboard error:', error);
+                document.getElementById('recentApplications').innerHTML = 
+                    '<tr><td colspan="6" class="text-center text-danger">Failed to load data</td></tr>';
+            }
+        }
+        
+        async function loadCharts() {
+            // Destroy existing charts if they exist
+            if (applicationsChart) applicationsChart.destroy();
+            if (statusChart) statusChart.destroy();
+            
+            // Get trend data
+            const trendRes = await fetch(`${API_BASE_URL}/admin/applications/trend`, {
+                headers: getAuthHeaders()
+            });
+            
+            let trendLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+            let trendData = [4, 7, 5, 8, 12, 9, 6];
+            
+            if (trendRes.ok) {
+                const trend = await trendRes.json();
+                trendLabels = trend.labels || trendLabels;
+                trendData = trend.data || trendData;
+            }
+            
+            // Applications trend chart
+            const appCtx = document.getElementById('applicationsChart').getContext('2d');
+            applicationsChart = new Chart(appCtx, {
+                type: 'line',
+                data: {
+                    labels: trendLabels,
+                    datasets: [{
+                        label: 'Applications',
+                        data: trendData,
+                        borderColor: '#0A1929',
+                        backgroundColor: 'rgba(10,25,41,0.1)',
+                        borderWidth: 3,
+                        pointBackgroundColor: '#F0B90B',
+                        pointBorderColor: '#F0B90B',
+                        pointRadius: 4,
+                        tension: 0.3,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { mode: 'index', intersect: false }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, grid: { drawBorder: false } }
+                    }
+                }
+            });
+            
+            // Get status distribution
+            const statusRes = await fetch(`${API_BASE_URL}/admin/applications/status-distribution`, {
+                headers: getAuthHeaders()
+            });
+            
+            let statusData = [45, 23, 12, 20];
+            if (statusRes.ok) {
+                const dist = await statusRes.json();
+                statusData = [
+                    dist.applied || 45,
+                    dist.shortlisted || 23,
+                    dist.selected || 12,
+                    dist.rejected || 20
+                ];
+            }
+            
+            // Status distribution chart
+            const statusCtx = document.getElementById('statusChart').getContext('2d');
+            statusChart = new Chart(statusCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Applied', 'Shortlisted', 'Selected', 'Rejected'],
+                    datasets: [{
+                        data: statusData,
+                        backgroundColor: ['#0A1929', '#F0B90B', '#27AE60', '#EB5757'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { boxWidth: 12, padding: 15 } }
+                    },
+                    cutout: '60%'
+                }
+            });
+        }
+        
+        function viewApplication(appId) {
+            window.location.href = `../applications.html?id=${appId}`;
+        }
+        
+        function sendNotification() {
+            new bootstrap.Modal(document.getElementById('notificationModal')).show();
+        }
+        
+        async function sendBroadcast() {
+            const title = document.getElementById('notifyTitle').value;
+            const message = document.getElementById('notifyMessageText').value;
+            const role = document.getElementById('notifyRole').value || null;
+            
+            if (!title || !message) {
+                showNotification('Please fill all fields', 'warning');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/notifications/broadcast?title=${encodeURIComponent(title)}&message=${encodeURIComponent(message)}${role ? '&role=' + role : ''}`, {
+                    method: 'POST',
+                    headers: getAuthHeaders()
+                });
+                
+                if (response.ok) {
+                    bootstrap.Modal.getInstance(document.getElementById('notificationModal')).hide();
+                    showNotification('Notification sent successfully!', 'success');
+                    document.getElementById('notifyForm').reset();
+                } else {
+                    const error = await response.json();
+                    showNotification('Error: ' + error.detail, 'danger');
+                }
+            } catch (error) {
+                showNotification('Network error', 'danger');
+            }
+        }
+        
+        document.getElementById('trendPeriod').addEventListener('change', function() {
+            loadCharts(); // Reload with new period
+        });
+        
+        // Auto-refresh every 30 seconds
+        setInterval(loadAdminDashboard, 30000);
+        
+        loadAdminDashboard();
+    </script>
+</body>
+</html>

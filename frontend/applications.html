@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Applications | Placement System</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/placement-theme.css">
+    
+    <style>
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        .status-applied { background: #f0f1ee; color: #0A1929; }
+        .status-shortlisted { background: #E8F5E9; color: #27AE60; }
+        .status-selected { background: #D4EDDA; color: #0A1929; }
+        .status-rejected { background: #FFEBEE; color: #EB5757; }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="dashboard.html">
+                <i class="fas fa-graduation-cap"></i>
+                Placement System
+            </a>
+            
+            <div class="d-flex align-items-center">
+                <div class="dropdown me-3">
+                    <button class="btn btn-link text-white position-relative p-0" data-bs-toggle="dropdown">
+                        <i class="fas fa-bell fs-5"></i>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-secondary" 
+                              id="notificationBadge" style="display: none;">0</span>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-end" style="width: 320px;" id="notificationList">
+                        <div class="text-center p-3">Loading...</div>
+                    </div>
+                </div>
+                
+                <div class="dropdown">
+                    <button class="btn btn-link text-white text-decoration-none d-flex align-items-center" data-bs-toggle="dropdown">
+                        <span class="me-2 d-none d-md-inline" id="userName">Student</span>
+                        <i class="fas fa-user-circle fs-4"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="dashboard.html">Dashboard</a></li>
+                        <li><a class="dropdown-item" href="profile.html">Profile</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="#" onclick="logout()">Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-4">
+        <h2 class="mb-4"><i class="fas fa-clipboard-list me-2 text-secondary"></i>My Applications</h2>
+        
+        <!-- Stats Cards -->
+        <div class="stats-grid mb-4">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <div class="stat-value" id="totalApps">0</div>
+                <div class="stat-label">Total Applied</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-value" id="shortlistedCount">0</div>
+                <div class="stat-label">Shortlisted</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div class="stat-value" id="selectedCount">0</div>
+                <div class="stat-label">Selected</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-times-circle"></i>
+                </div>
+                <div class="stat-value" id="rejectedCount">0</div>
+                <div class="stat-label">Rejected</div>
+            </div>
+        </div>
+        
+        <!-- Tabs -->
+        <ul class="nav nav-tabs mb-3" id="applicationTabs">
+            <li class="nav-item">
+                <a class="nav-link active" data-status="all" href="#">All</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-status="applied" href="#">Applied</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-status="shortlisted" href="#">Shortlisted</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-status="selected" href="#">Selected</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-status="rejected" href="#">Rejected</a>
+            </li>
+        </ul>
+        
+        <!-- Applications Table -->
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Company</th>
+                                <th>Job Title</th>
+                                <th>Applied Date</th>
+                                <th>Last Date</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="applicationsList">
+                            <tr>
+                                <td colspan="6" class="text-center py-4">
+                                    <div class="spinner-border text-secondary"></div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        let allApplications = [];
+        
+        async function loadApplications() {
+            try {
+                await loadUserInfo();
+                
+                const response = await fetch(`${API_BASE_URL}/student/my-applications`, {
+                    headers: getAuthHeaders()
+                });
+                
+                if (response.ok) {
+                    allApplications = await response.json();
+                    displayApplications(allApplications);
+                    updateStats(allApplications);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('applicationsList').innerHTML = 
+                    '<tr><td colspan="6" class="text-center text-danger">Failed to load applications</td></tr>';
+            }
+        }
+        
+        function displayApplications(applications) {
+            const tbody = document.getElementById('applicationsList');
+            
+            if (applications.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center">No applications found</td></tr>';
+                return;
+            }
+            
+            let html = '';
+            applications.forEach(app => {
+                const statusClass = `status-${app.status}`;
+                html += `
+                    <tr>
+                        <td><strong>${app.company_name}</strong></td>
+                        <td>${app.job_title}</td>
+                        <td>${new Date(app.applied_at).toLocaleDateString()}</td>
+                        <td>${new Date(app.last_date).toLocaleDateString()}</td>
+                        <td><span class="status-badge ${statusClass}">${app.status.toUpperCase()}</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary" onclick="viewDrive(${app.drive_id})">
+                                View Drive
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html;
+        }
+        
+        function updateStats(applications) {
+            document.getElementById('totalApps').textContent = applications.length;
+            document.getElementById('shortlistedCount').textContent = 
+                applications.filter(a => a.status === 'shortlisted').length;
+            document.getElementById('selectedCount').textContent = 
+                applications.filter(a => a.status === 'selected').length;
+            document.getElementById('rejectedCount').textContent = 
+                applications.filter(a => a.status === 'rejected').length;
+        }
+        
+        function viewDrive(driveId) {
+            window.location.href = `drives.html?id=${driveId}`;
+        }
+        
+        // Tab filtering
+        document.querySelectorAll('#applicationTabs .nav-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                
+                document.querySelectorAll('#applicationTabs .nav-link').forEach(l => l.classList.remove('active'));
+                e.target.classList.add('active');
+                
+                const status = e.target.dataset.status;
+                if (status === 'all') {
+                    displayApplications(allApplications);
+                } else {
+                    const filtered = allApplications.filter(a => a.status === status);
+                    displayApplications(filtered);
+                }
+            });
+        });
+        
+        if (checkAuth()) {
+            loadApplications();
+        }
+    </script>
+</body>
+</html>

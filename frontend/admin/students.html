@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Students Management | Admin</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/placement-theme.css">
+    
+    <style>
+        .sidebar {
+            background: #0A1929;
+            min-height: 100vh;
+            position: fixed;
+            width: 260px;
+            color: white;
+            z-index: 1000;
+        }
+        .sidebar-header {
+            padding: 30px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .sidebar-header h4 {
+            color: white;
+            margin: 0;
+        }
+        .sidebar-header small {
+            color: #F0B90B;
+        }
+        .sidebar-nav {
+            padding: 20px 0;
+        }
+        .sidebar-nav a {
+            display: block;
+            padding: 12px 25px;
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+        }
+        .sidebar-nav a:hover,
+        .sidebar-nav a.active {
+            background: rgba(240,185,11,0.1);
+            color: #F0B90B;
+            border-left-color: #F0B90B;
+        }
+        .sidebar-nav a i {
+            width: 25px;
+            margin-right: 10px;
+        }
+        .main-content {
+            margin-left: 260px;
+            padding: 30px;
+        }
+        .top-bar {
+            background: white;
+            padding: 15px 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .student-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #0A1929, #F0B90B);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        .filter-section {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .filter-section input,
+        .filter-section select {
+            min-width: 200px;
+            flex: 1;
+            height: 45px;
+            border: 1px solid #E5E7EB;
+            border-radius: 8px;
+            padding: 0 15px;
+        }
+        .filter-section .search-btn {
+            height: 45px;
+            min-width: 100px;
+            background: #0A1929;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+        .filter-section .search-btn:hover {
+            background: #F0B90B;
+            color: #0A1929;
+        }
+        .action-btn {
+            width: 35px;
+            height: 35px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 2px;
+            transition: all 0.2s;
+            border: none;
+        }
+        .action-btn:hover {
+            transform: scale(1.1);
+        }
+        .btn-view { background: #E3F2FD; color: #0A1929; }
+        .btn-edit { background: #FFF3E0; color: #F2994A; }
+        .btn-delete { background: #FFEBEE; color: #EB5757; }
+        .btn-resume { background: #E8F5E9; color: #27AE60; }
+        
+        .badge-success { background: #E8F5E9; color: #27AE60; }
+        .badge-warning { background: #FFF3E0; color: #F2994A; }
+        .badge-secondary { background: #F3F4F6; color: #6B7280; }
+        .badge-applied { background: #E3F2FD; color: #0A1929; }
+        
+        .modal-lg {
+            max-width: 800px;
+        }
+        .skill-badge {
+            background: #E3F2FD;
+            color: #0A1929;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin: 2px;
+            display: inline-block;
+        }
+        .add-student-btn {
+            background: #0A1929;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        .add-student-btn:hover {
+            background: #F0B90B;
+            color: #0A1929;
+        }
+        .table th {
+            background: #F8FAFC;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h4><i class="fas fa-graduation-cap me-2" style="color: #F0B90B;"></i>Admin Panel</h4>
+            <small>Placement System</small>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <a href="dashboard.html"><i class="fas fa-chart-pie"></i> Dashboard</a>
+            <a href="companies.html"><i class="fas fa-building"></i> Companies</a>
+            <a href="drives.html"><i class="fas fa-briefcase"></i> Drives</a>
+            <a href="students.html" class="active"><i class="fas fa-users"></i> Students</a>
+            <a href="analytics.html"><i class="fas fa-chart-line"></i> Analytics</a>
+            <a href="models-dashboard.html"><i class="fas fa-robot"></i> AI Models</a>
+            <a href="export-reports.html"><i class="fas fa-download"></i> Export</a>
+            <a href="#" onclick="adminLogout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <h4 class="fw-bold mb-0">
+                <i class="fas fa-users me-2 text-secondary"></i>
+                Students Management
+            </h4>
+            <div class="d-flex align-items-center">
+                <span class="fw-bold" id="adminName">Admin</span>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="stat-card p-3">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon me-3" style="width: 50px; height: 50px;">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div>
+                            <div class="stat-value h3 mb-0" id="totalStudents">0</div>
+                            <div class="stat-label">Total Students</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card p-3">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon me-3" style="width: 50px; height: 50px;">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div>
+                            <div class="stat-value h3 mb-0" id="verifiedStudents">0</div>
+                            <div class="stat-label">Verified</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card p-3">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon me-3" style="width: 50px; height: 50px;">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <div>
+                            <div class="stat-value h3 mb-0" id="withResume">0</div>
+                            <div class="stat-label">With Resume</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card p-3">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon me-3" style="width: 50px; height: 50px;">
+                            <i class="fas fa-briefcase"></i>
+                        </div>
+                        <div>
+                            <div class="stat-value h3 mb-0" id="totalApplications">0</div>
+                            <div class="stat-label">Applications</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FILTER SECTION -->
+        <div class="filter-section">
+            <input type="text" class="form-control" id="searchStudent" placeholder="Search by name, roll number or email...">
+            <select class="form-control" id="branchFilter">
+                <option value="">All Branches</option>
+                <option value="CSE">CSE</option>
+                <option value="IT">IT</option>
+                <option value="ECE">ECE</option>
+                <option value="EEE">EEE</option>
+                <option value="MECH">MECH</option>
+                <option value="CIVIL">CIVIL</option>
+            </select>
+            <select class="form-control" id="semesterFilter">
+                <option value="">All Semesters</option>
+                <option value="1">Semester 1</option>
+                <option value="2">Semester 2</option>
+                <option value="3">Semester 3</option>
+                <option value="4">Semester 4</option>
+                <option value="5">Semester 5</option>
+                <option value="6">Semester 6</option>
+                <option value="7">Semester 7</option>
+                <option value="8">Semester 8</option>
+            </select>
+            <button class="search-btn" onclick="filterStudents()">
+                <i class="fas fa-search me-2"></i>Search
+            </button>
+        </div>
+        
+        <!-- Add Student Button -->
+        <div class="d-flex justify-content-end">
+            <button class="add-student-btn" onclick="addStudent()">
+                <i class="fas fa-user-plus me-2"></i>Add Student
+            </button>
+        </div>
+
+        <!-- Students Table - WITHOUT STATUS COLUMN -->
+        <div class="card mt-3">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span><i class="fas fa-users me-2 text-secondary"></i>All Students</span>
+                <span class="badge bg-primary" id="totalStudentsCount">0</span>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Roll No</th>
+                                <th>Branch</th>
+                                <th>Sem</th>
+                                <th>CGPA</th>
+                                <th>Skills</th>
+                                <th>Resume</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="studentsList">
+                            <tr>
+                                <td colspan="8" class="text-center py-4">
+                                    <div class="spinner-border text-secondary"></div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Student Modal -->
+    <div class="modal fade" id="addStudentModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-user-plus me-2 text-secondary"></i>Add New Student
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="addStudentMessage"></div>
+                    <form id="addStudentForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Full Name *</label>
+                                <input type="text" class="form-control" id="addFullName" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Email *</label>
+                                <input type="email" class="form-control" id="addEmail" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Password *</label>
+                                <input type="password" class="form-control" id="addPassword" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Roll Number</label>
+                                <input type="text" class="form-control" id="addRollNumber">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Branch</label>
+                                <select class="form-control" id="addBranch">
+                                    <option value="">Select Branch</option>
+                                    <option value="CSE">CSE</option>
+                                    <option value="IT">IT</option>
+                                    <option value="ECE">ECE</option>
+                                    <option value="EEE">EEE</option>
+                                    <option value="MECH">MECH</option>
+                                    <option value="CIVIL">CIVIL</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Semester</label>
+                                <input type="number" class="form-control" id="addSemester" min="1" max="8">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">CGPA</label>
+                                <input type="number" step="0.01" class="form-control" id="addCgpa" min="0" max="10">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Skills (comma separated)</label>
+                            <textarea class="form-control" id="addSkills" rows="2" placeholder="Python, Java, SQL, Machine Learning"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="saveNewStudent()">Add Student</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Student Modal -->
+    <div class="modal fade" id="editStudentModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-user-edit me-2 text-secondary"></i>Edit Student
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="editMessage"></div>
+                    <input type="hidden" id="editStudentId">
+                    <form id="editStudentForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Full Name</label>
+                                <input type="text" class="form-control" id="editFullName" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" id="editEmail" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Roll Number</label>
+                                <input type="text" class="form-control" id="editRollNumber">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Branch</label>
+                                <select class="form-control" id="editBranch">
+                                    <option value="">Select Branch</option>
+                                    <option value="CSE">CSE</option>
+                                    <option value="IT">IT</option>
+                                    <option value="ECE">ECE</option>
+                                    <option value="EEE">EEE</option>
+                                    <option value="MECH">MECH</option>
+                                    <option value="CIVIL">CIVIL</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Semester</label>
+                                <input type="number" class="form-control" id="editSemester" min="1" max="8">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">CGPA</label>
+                                <input type="number" step="0.01" class="form-control" id="editCgpa" min="0" max="10">
+                            </div>
+                            <div class="col-md-8 mb-3">
+                                <label class="form-label">Skills (comma separated)</label>
+                                <textarea class="form-control" id="editSkills" rows="2"></textarea>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="updateStudent()">Update Student</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Student Modal -->
+    <div class="modal fade" id="viewStudentModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-user-circle me-2 text-secondary"></i>Student Details
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center mb-4">
+                        <div class="student-avatar mx-auto" style="width: 80px; height: 80px; font-size: 2rem;" id="viewAvatar">S</div>
+                        <h4 class="mt-2" id="viewFullName"></h4>
+                        <p class="text-muted" id="viewEmail"></p>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <table class="table table-borderless">
+                                <tr>
+                                    <th>Roll Number:</th>
+                                    <td id="viewRollNumber"></td>
+                                </tr>
+                                <tr>
+                                    <th>Branch:</th>
+                                    <td id="viewBranch"></td>
+                                </tr>
+                                <tr>
+                                    <th>Semester:</th>
+                                    <td id="viewSemester"></td>
+                                </tr>
+                                <tr>
+                                    <th>CGPA:</th>
+                                    <td id="viewCgpa"></td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <table class="table table-borderless">
+                                <tr>
+                                    <th>Email Verified:</th>
+                                    <td id="viewEmailVerified"></td>
+                                </tr>
+                                <tr>
+                                    <th>Registered:</th>
+                                    <td id="viewRegistered"></td>
+                                </tr>
+                                <tr>
+                                    <th>Resume:</th>
+                                    <td id="viewResume"></td>
+                                </tr>
+                                <tr>
+                                    <th>Applications:</th>
+                                    <td id="viewApplications">0</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-3">
+                        <h6>Skills:</h6>
+                        <div id="viewSkills" class="mb-3"></div>
+                    </div>
+                    
+                    <div class="mt-3">
+                        <h6>Recent Applications:</h6>
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Company</th>
+                                        <th>Job Title</th>
+                                        <th>Status</th>
+                                        <th>Applied On</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="viewApplicationsList">
+                                    <tr><td colspan="4" class="text-center">No applications found</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="editFromView()">Edit Student</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteConfirmModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-danger">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Confirm Delete
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete <strong id="deleteStudentName"></strong>?</p>
+                    <p class="text-danger">This action cannot be undone! All applications and data will be permanently removed.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" onclick="confirmDelete()">
+                        <i class="fas fa-trash me-2"></i>Delete Student
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/main.js"></script>
+    <script>
+        const token = localStorage.getItem('token');
+        const role = localStorage.getItem('role');
+        let allStudents = [];
+        let deleteId = null;
+        
+        if (!token || role !== 'admin') {
+            window.location.href = '../index.html';
+        }
+
+        async function loadStudents() {
+            try {
+                await loadAdminInfo();
+                
+                const response = await fetch(`${API_BASE_URL}/admin/students`, {
+                    headers: getAuthHeaders()
+                });
+                
+                if (response.ok) {
+                    allStudents = await response.json();
+                    
+                    // Update stats
+                    document.getElementById('totalStudents').textContent = allStudents.length;
+                    document.getElementById('totalStudentsCount').textContent = allStudents.length;
+                    
+                    const verified = allStudents.filter(s => s.email_verified).length;
+                    document.getElementById('verifiedStudents').textContent = verified;
+                    
+                    const withResume = allStudents.filter(s => s.resume_path).length;
+                    document.getElementById('withResume').textContent = withResume;
+                    
+                    // Get total applications
+                    const dashboardRes = await fetch(`${API_BASE_URL}/admin/dashboard`, {
+                        headers: getAuthHeaders()
+                    });
+                    
+                    if (dashboardRes.ok) {
+                        const stats = await dashboardRes.json();
+                        document.getElementById('totalApplications').textContent = stats.total_applications || 0;
+                    }
+                    
+                    displayStudents(allStudents);
+                } else {
+                    document.getElementById('studentsList').innerHTML = 
+                        '<tr><td colspan="8" class="text-center text-danger">Failed to load students</td></tr>';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('studentsList').innerHTML = 
+                    '<tr><td colspan="8" class="text-center text-danger">Network error</td></tr>';
+            }
+        }
+        
+        function displayStudents(students) {
+            const tbody = document.getElementById('studentsList');
+            
+            if (students.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="text-center">No students found</td></tr>';
+                return;
+            }
+            
+            let html = '';
+            students.forEach(student => {
+                const initial = student.full_name?.charAt(0).toUpperCase() || 'S';
+                const skillsCount = student.skills ? student.skills.split(',').filter(s => s.trim()).length : 0;
+                
+                html += `
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="student-avatar me-2">${initial}</div>
+                                <div>
+                                    <strong>${student.full_name || 'N/A'}</strong><br>
+                                    <small class="text-muted">${student.email || ''}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>${student.roll_number || 'N/A'}</td>
+                        <td>${student.branch || 'N/A'}</td>
+                        <td>${student.semester || 'N/A'}</td>
+                        <td>${student.cgpa || 'N/A'}</td>
+                        <td>
+                            <span class="badge badge-applied">${skillsCount} skills</span>
+                        </td>
+                        <td>
+                            ${student.resume_path ? 
+                                `<button class="btn btn-sm action-btn btn-resume" onclick="downloadResume(${student.id})" title="Download Resume">
+                                    <i class="fas fa-download"></i>
+                                </button>` : 
+                                '<span class="text-muted"><i class="fas fa-times"></i></span>'
+                            }
+                        </td>
+                        <td>
+                            <div class="d-flex flex-row gap-1 align-items-center">
+                                <button class="btn btn-sm action-btn btn-view" onclick="viewStudent(${student.id})" title="View Details">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn btn-sm action-btn btn-edit" onclick="editStudent(${student.id})" title="Edit Student">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm action-btn btn-delete" onclick="deleteStudent(${student.id}, '${student.full_name || 'Student'}')" title="Delete Student">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html;
+        }
+        
+        function filterStudents() {
+            const search = document.getElementById('searchStudent').value.toLowerCase();
+            const branch = document.getElementById('branchFilter').value;
+            const semester = document.getElementById('semesterFilter').value;
+            
+            let filtered = allStudents;
+            
+            if (search) {
+                filtered = filtered.filter(s => 
+                    s.full_name?.toLowerCase().includes(search) ||
+                    s.roll_number?.toLowerCase().includes(search) ||
+                    s.email?.toLowerCase().includes(search)
+                );
+            }
+            
+            if (branch) {
+                filtered = filtered.filter(s => s.branch === branch);
+            }
+            
+            if (semester) {
+                filtered = filtered.filter(s => s.semester == semester);
+            }
+            
+            displayStudents(filtered);
+        }
+        
+        // ===== RESUME DOWNLOAD FUNCTION =====
+        async function downloadResume(studentId) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/admin/download-resume/${studentId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const blob = await response.blob();
+                    // Content-Disposition header se actual filename lo
+                    const disposition = response.headers.get('content-disposition');
+                    let filename = `resume_${studentId}`;
+                    if (disposition) {
+                        const match = disposition.match(/filename[^;=\n]*=(['"]*)(.*?)\1/);
+                        if (match && match[2]) filename = match[2].trim();
+                    } else {
+                        // content-type se extension detect karo
+                        const ct = response.headers.get('content-type') || '';
+                        if (ct.includes('pdf')) filename += '.pdf';
+                        else if (ct.includes('wordprocessingml')) filename += '.docx';
+                        else if (ct.includes('msword')) filename += '.doc';
+                        else filename += '.pdf';
+                    }
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = filename;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                    showNotification('Resume downloaded successfully!', 'success');
+                } else {
+                    const error = await response.json();
+                    showNotification('Error: ' + (error.detail || 'Download failed'), 'danger');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showNotification('Failed to download resume', 'danger');
+            }
+        }
+        
+        // ===== ADD STUDENT FUNCTIONS =====
+        function addStudent() {
+            // Clear form
+            document.getElementById('addFullName').value = '';
+            document.getElementById('addEmail').value = '';
+            document.getElementById('addPassword').value = '';
+            document.getElementById('addRollNumber').value = '';
+            document.getElementById('addBranch').value = '';
+            document.getElementById('addSemester').value = '';
+            document.getElementById('addCgpa').value = '';
+            document.getElementById('addSkills').value = '';
+            
+            new bootstrap.Modal(document.getElementById('addStudentModal')).show();
+        }
+        
+        async function saveNewStudent() {
+            const studentData = {
+                full_name: document.getElementById('addFullName').value,
+                email: document.getElementById('addEmail').value,
+                password: document.getElementById('addPassword').value,
+                roll_number: document.getElementById('addRollNumber').value,
+                branch: document.getElementById('addBranch').value,
+                semester: parseInt(document.getElementById('addSemester').value) || null,
+                cgpa: parseFloat(document.getElementById('addCgpa').value) || null,
+                skills: document.getElementById('addSkills').value,
+                role: 'student'
+            };
+            
+            if (!studentData.full_name || !studentData.email || !studentData.password) {
+                showNotification('Name, email and password are required', 'warning');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(studentData)
+                });
+                
+                if (response.ok) {
+                    bootstrap.Modal.getInstance(document.getElementById('addStudentModal')).hide();
+                    await loadStudents();
+                    showNotification('Student added successfully!', 'success');
+                } else {
+                    const error = await response.json();
+                    showNotification('Error: ' + error.detail, 'danger');
+                }
+            } catch (error) {
+                showNotification('Network error', 'danger');
+            }
+        }
+        
+        // ===== VIEW STUDENT FUNCTION =====
+        async function viewStudent(id) {
+            const student = allStudents.find(s => s.id === id);
+            if (!student) return;
+            
+            document.getElementById('viewAvatar').textContent = student.full_name?.charAt(0).toUpperCase() || 'S';
+            document.getElementById('viewFullName').textContent = student.full_name || 'N/A';
+            document.getElementById('viewEmail').textContent = student.email || 'N/A';
+            document.getElementById('viewRollNumber').textContent = student.roll_number || 'N/A';
+            document.getElementById('viewBranch').textContent = student.branch || 'N/A';
+            document.getElementById('viewSemester').textContent = student.semester || 'N/A';
+            document.getElementById('viewCgpa').textContent = student.cgpa || 'N/A';
+            
+            document.getElementById('viewEmailVerified').innerHTML = student.email_verified ? 
+                '<span class="badge badge-success">Verified</span>' : 
+                '<span class="badge badge-warning">Pending</span>';
+            
+            document.getElementById('viewRegistered').textContent = student.registration_date ? 
+                new Date(student.registration_date).toLocaleDateString() : 'N/A';
+            
+            document.getElementById('viewResume').innerHTML = student.resume_path ? 
+                '<span class="badge badge-success">Uploaded</span>' : 
+                '<span class="badge badge-secondary">Not Uploaded</span>';
+            
+            // Skills display
+            const skillsDiv = document.getElementById('viewSkills');
+            if (student.skills) {
+                const skills = student.skills.split(',').map(s => s.trim());
+                skillsDiv.innerHTML = skills.map(s => `<span class="skill-badge">${s}</span>`).join('');
+            } else {
+                skillsDiv.innerHTML = '<p class="text-muted">No skills added</p>';
+            }
+            
+            // Load applications
+            await loadStudentApplications(id);
+            
+            new bootstrap.Modal(document.getElementById('viewStudentModal')).show();
+        }
+        
+        async function loadStudentApplications(studentId) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/admin/students/${studentId}/applications`, {
+                    headers: getAuthHeaders()
+                });
+                
+                if (response.ok) {
+                    const applications = await response.json();
+                    const tbody = document.getElementById('viewApplicationsList');
+                    document.getElementById('viewApplications').textContent = applications.length;
+                    
+                    if (applications.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="4" class="text-center">No applications found</td></tr>';
+                        return;
+                    }
+                    
+                    let html = '';
+                    applications.slice(0, 5).forEach(app => {
+                        const statusClass = `badge badge-${app.status}`;
+                        html += `
+                            <tr>
+                                <td>${app.company_name}</td>
+                                <td>${app.job_title}</td>
+                                <td><span class="${statusClass}">${app.status}</span></td>
+                                <td>${new Date(app.applied_at).toLocaleDateString()}</td>
+                            </tr>
+                        `;
+                    });
+                    tbody.innerHTML = html;
+                }
+            } catch (error) {
+                console.error('Error loading applications:', error);
+            }
+        }
+        
+        // ===== EDIT STUDENT FUNCTIONS =====
+        function editStudent(id) {
+            const student = allStudents.find(s => s.id === id);
+            if (!student) return;
+            
+            document.getElementById('editStudentId').value = student.id;
+            document.getElementById('editFullName').value = student.full_name || '';
+            document.getElementById('editEmail').value = student.email || '';
+            document.getElementById('editRollNumber').value = student.roll_number || '';
+            document.getElementById('editBranch').value = student.branch || '';
+            document.getElementById('editSemester').value = student.semester || '';
+            document.getElementById('editCgpa').value = student.cgpa || '';
+            document.getElementById('editSkills').value = student.skills || '';
+            
+            new bootstrap.Modal(document.getElementById('editStudentModal')).show();
+        }
+        
+        function editFromView() {
+            bootstrap.Modal.getInstance(document.getElementById('viewStudentModal')).hide();
+            setTimeout(() => {
+                editStudent(parseInt(document.getElementById('editStudentId').value));
+            }, 500);
+        }
+        
+        async function updateStudent() {
+            const studentId = document.getElementById('editStudentId').value;
+            const studentData = {
+                full_name: document.getElementById('editFullName').value,
+                email: document.getElementById('editEmail').value,
+                roll_number: document.getElementById('editRollNumber').value,
+                branch: document.getElementById('editBranch').value,
+                semester: parseInt(document.getElementById('editSemester').value) || null,
+                cgpa: parseFloat(document.getElementById('editCgpa').value) || null,
+                skills: document.getElementById('editSkills').value
+            };
+            
+            if (!studentData.full_name || !studentData.email) {
+                showNotification('Name and email are required', 'warning');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/admin/students/${studentId}`, {
+                    method: 'PUT',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify(studentData)
+                });
+                
+                if (response.ok) {
+                    bootstrap.Modal.getInstance(document.getElementById('editStudentModal')).hide();
+                    await loadStudents();
+                    showNotification('Student updated successfully!', 'success');
+                } else {
+                    const error = await response.json();
+                    showNotification('Error: ' + (error.detail || 'Update failed'), 'danger');
+                }
+            } catch (error) {
+                showNotification('Network error', 'danger');
+            }
+        }
+        
+        // ===== DELETE STUDENT FUNCTION =====
+        function deleteStudent(id, name) {
+            deleteId = id;
+            document.getElementById('deleteStudentName').textContent = name;
+            new bootstrap.Modal(document.getElementById('deleteConfirmModal')).show();
+        }
+        
+        async function confirmDelete() {
+            if (!deleteId) return;
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/admin/students/${deleteId}`, {
+                    method: 'DELETE',
+                    headers: getAuthHeaders()
+                });
+                
+                if (response.ok) {
+                    bootstrap.Modal.getInstance(document.getElementById('deleteConfirmModal')).hide();
+                    await loadStudents();
+                    showNotification('Student deleted successfully!', 'success');
+                } else {
+                    const error = await response.json();
+                    showNotification('Error: ' + (error.detail || 'Delete failed'), 'danger');
+                }
+            } catch (error) {
+                showNotification('Network error', 'danger');
+            } finally {
+                deleteId = null;
+            }
+        }
+        
+        // Event listeners for filtering
+        document.getElementById('searchStudent').addEventListener('keyup', filterStudents);
+        document.getElementById('branchFilter').addEventListener('change', filterStudents);
+        document.getElementById('semesterFilter').addEventListener('change', filterStudents);
+        
+        // Auto-refresh every 30 seconds
+        setInterval(loadStudents, 30000);
+        
+        // Initial load
+        loadStudents();
+    </script>
+</body>
+</html>

@@ -1,0 +1,1802 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Model Management | Placement System</title>
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+
+    <style>
+        /* ===== PROFESSIONAL THEME - Same as admin dashboard ===== */
+        :root {
+            --primary: #0A1929;
+            --primary-light: #1A2A3A;
+            --secondary: #F0B90B;
+            --success: #10B981;
+            --danger: #EF4444;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --dark: #1F2937;
+            --light: #F9FAFB;
+            --border: #E5E7EB;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #F3F4F6;
+            color: var(--dark);
+        }
+
+        /* ===== SIDEBAR - Same as other admin pages ===== */
+        .app-wrapper {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            background: #0A1929;
+            min-height: 100vh;
+            position: fixed;
+            width: 260px;
+            color: white;
+            z-index: 1000;
+            transition: all 0.3s;
+        }
+
+        .sidebar-header {
+            padding: 30px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-header h4 {
+            color: white;
+            margin: 0;
+        }
+
+        .sidebar-header small {
+            color: #F0B90B;
+        }
+
+        .sidebar-nav {
+            padding: 20px 0;
+        }
+
+        .sidebar-nav a {
+            display: block;
+            padding: 12px 25px;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+        }
+
+        .sidebar-nav a:hover,
+        .sidebar-nav a.active {
+            background: rgba(240, 185, 11, 0.1);
+            color: #F0B90B;
+            border-left-color: #F0B90B;
+        }
+
+        .sidebar-nav a i {
+            width: 25px;
+            margin-right: 10px;
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 30px;
+        }
+
+        /* ===== TOP BAR - Same as dashboard ===== */
+        .top-bar {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid var(--border);
+        }
+
+        .page-title h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin: 0;
+        }
+
+        .page-title p {
+            color: #6B7280;
+            font-size: 0.9rem;
+            margin: 5px 0 0;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .notification-badge {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .notification-badge i {
+            font-size: 1.2rem;
+            color: #6B7280;
+        }
+
+        .badge-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--danger);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        /* ===== STATUS BANNER ===== */
+        .status-banner {
+            background: white;
+            border-radius: 12px;
+            padding: 20px 30px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .system-status {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--success);
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.warning {
+            background: var(--warning);
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+            }
+        }
+
+        .last-auto-train {
+            color: #6B7280;
+            font-size: 0.9rem;
+        }
+
+        .refresh-btn {
+            background: var(--light);
+            border: 1px solid var(--border);
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .refresh-btn:hover {
+            background: var(--secondary);
+            color: white;
+            border-color: var(--secondary);
+        }
+
+        /* ===== MODEL CARDS ===== */
+        .models-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(550px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .model-card {
+            background: white;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .model-card:hover {
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .model-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #F9FAFB;
+        }
+
+        .model-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .model-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .model-name h4 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin: 0 0 4px;
+        }
+
+        .model-version {
+            font-size: 0.8rem;
+            color: #6B7280;
+            background: #F3F4F6;
+            padding: 2px 8px;
+            border-radius: 30px;
+        }
+
+        .model-badge {
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .badge-production {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+
+        .badge-staging {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+
+        .model-body {
+            padding: 24px;
+        }
+
+        /* Metrics Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .metric-item {
+            text-align: center;
+            padding: 15px;
+            background: #F9FAFB;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .metric-label {
+            font-size: 0.8rem;
+            color: #6B7280;
+            margin-bottom: 5px;
+        }
+
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            line-height: 1.2;
+        }
+
+        .metric-trend {
+            font-size: 0.7rem;
+            color: var(--success);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+        }
+
+        .metric-trend.down {
+            color: var(--danger);
+        }
+
+        /* Info Grid */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #F9FAFB;
+            border-radius: 12px;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .info-item i {
+            width: 20px;
+            color: #6B7280;
+        }
+
+        .info-item span {
+            font-size: 0.9rem;
+        }
+
+        .info-item strong {
+            color: var(--primary);
+            margin-left: 5px;
+        }
+
+        /* Performance Chart */
+        .performance-chart {
+            height: 100px;
+            margin: 20px 0;
+            position: relative;
+        }
+
+        /* Action Buttons */
+        .model-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-light);
+        }
+
+        .btn-outline {
+            background: white;
+            border: 1px solid var(--border);
+            color: var(--dark);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--secondary);
+            background: #FFF9E6;
+        }
+
+        .btn-warning {
+            background: var(--warning);
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #D97706;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #DC2626;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.8rem;
+        }
+
+        /* Version History Table */
+        .version-history {
+            background: white;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            margin-top: 30px;
+        }
+
+        .history-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .history-header h5 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .history-filters {
+            display: flex;
+            gap: 10px;
+        }
+
+        .history-filters select {
+            padding: 6px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        .version-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .version-table th {
+            text-align: left;
+            padding: 15px 24px;
+            background: #F9FAFB;
+            font-weight: 500;
+            color: #6B7280;
+            font-size: 0.9rem;
+        }
+
+        .version-table td {
+            padding: 15px 24px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .version-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .version-table tr:hover {
+            background: #F9FAFB;
+        }
+
+        .version-current {
+            background: #F0FDF4;
+        }
+
+        .badge-current {
+            background: var(--success);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+        }
+
+        .badge-archived {
+            background: #F3F4F6;
+            color: #6B7280;
+            padding: 4px 8px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+        }
+
+        .badge-success {
+            background: #D1FAE5;
+            color: #065F46;
+            padding: 4px 8px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+        }
+
+        .badge-danger {
+            background: #FEE2E2;
+            color: #991B1B;
+            padding: 4px 8px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+        }
+
+        .badge-warning {
+            background: #FEF3C7;
+            color: #92400E;
+            padding: 4px 8px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+        }
+
+        .rollback-btn {
+            background: none;
+            border: 1px solid var(--border);
+            padding: 5px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .rollback-btn:hover {
+            border-color: var(--warning);
+            color: var(--warning);
+        }
+
+        /* Schedule Card */
+        .schedule-card {
+            background: white;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            padding: 24px;
+            margin-top: 30px;
+        }
+
+        .schedule-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .schedule-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toggle-switch {
+            width: 50px;
+            height: 24px;
+            background: #E5E7EB;
+            border-radius: 30px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .toggle-switch.active {
+            background: var(--success);
+        }
+
+        .toggle-slider {
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: all 0.3s;
+        }
+
+        .toggle-switch.active .toggle-slider {
+            left: 28px;
+        }
+
+        /* Training Logs */
+        .logs-container {
+            margin-top: 30px;
+            background: white;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+
+        .logs-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .log-item {
+            padding: 15px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .log-item:last-child {
+            border-bottom: none;
+        }
+
+        .log-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .log-icon.success {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+
+        .log-icon.failed {
+            background: #FEE2E2;
+            color: #991B1B;
+        }
+
+        .log-icon.pending {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+
+        .log-content {
+            flex: 1;
+        }
+
+        .log-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .log-meta {
+            font-size: 0.8rem;
+            color: #6B7280;
+        }
+
+        .log-time {
+            font-size: 0.8rem;
+            color: #9CA3AF;
+        }
+
+        /* Loading Overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            backdrop-filter: blur(5px);
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid #E5E7EB;
+            border-top-color: var(--secondary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 0;
+                overflow: hidden;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .models-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .metrics-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-wrapper">
+        <!-- Sidebar - Same as other admin pages -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h4><i class="fas fa-graduation-cap me-2" style="color: #F0B90B;"></i>Admin Panel</h4>
+                <small>Placement System</small>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="dashboard.html"><i class="fas fa-chart-pie"></i> Dashboard</a>
+                <a href="companies.html"><i class="fas fa-building"></i> Companies</a>
+                <a href="drives.html"><i class="fas fa-briefcase"></i> Drives</a>
+                <a href="students.html"><i class="fas fa-users"></i> Students</a>
+                <a href="analytics.html"><i class="fas fa-chart-line"></i> Analytics</a>
+                <a href="models-dashboard.html" class="active"><i class="fas fa-robot"></i> AI Models</a>
+                <a href="export-reports.html"><i class="fas fa-download"></i> Export</a>
+                <a href="#" onclick="adminLogout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Top Bar -->
+            <div class="top-bar">
+                <div class="page-title">
+                    <h2><i class="fas fa-robot me-2 text-secondary"></i>AI Model Management</h2>
+                    <p>Monitor, train, and manage machine learning models</p>
+                </div>
+
+                <div class="user-menu">
+                    <div class="notification-badge" onclick="showNotifications()">
+                        <i class="far fa-bell"></i>
+                        <span class="badge-count" id="notificationCount">0</span>
+                    </div>
+
+                    <div class="user-profile" onclick="toggleUserMenu()">
+                        <div class="user-avatar" id="userAvatar">A</div>
+                        <div>
+                            <strong id="adminName">Admin</strong>
+                            <small class="d-block text-muted">Administrator</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Status Banner -->
+            <div class="status-banner animate__animated animate__fadeIn">
+                <div class="system-status">
+                    <div class="status-indicator">
+                        <span class="status-dot" id="systemHealthDot"></span>
+                        <span><strong id="systemHealthText">Loading system status...</strong></span>
+                    </div>
+                    <div class="last-auto-train" id="lastAutoTrain">
+                        <i class="far fa-clock"></i> Last auto-train: Loading...
+                    </div>
+                </div>
+
+                <div>
+                    <button class="refresh-btn" onclick="refreshAllData()">
+                        <i class="fas fa-sync-alt me-2"></i>Refresh
+                    </button>
+                </div>
+            </div>
+
+            <!-- Models Grid -->
+            <div class="models-grid">
+                <!-- Eligibility Model Card -->
+                <div class="model-card animate__animated animate__fadeInUp" id="eligibilityCard">
+                    <div class="model-header">
+                        <div class="model-title">
+                            <div class="model-icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="model-name">
+                                <h4>Eligibility Predictor</h4>
+                                <span class="model-version" id="eligibilityVersion">v2.3.1</span>
+                            </div>
+                        </div>
+                        <span class="model-badge badge-production" id="eligibilityStatus">Production</span>
+                    </div>
+
+                    <div class="model-body">
+                        <!-- Metrics -->
+                        <div class="metrics-grid">
+                            <div class="metric-item">
+                                <div class="metric-label">Accuracy</div>
+                                <div class="metric-value" id="eligibilityAccuracy">0%</div>
+                                <div class="metric-trend" id="eligibilityAccuracyTrend">
+                                    <i class="fas fa-minus"></i>
+                                </div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-label">Precision</div>
+                                <div class="metric-value" id="eligibilityPrecision">0%</div>
+                                <div class="metric-trend" id="eligibilityPrecisionTrend">
+                                    <i class="fas fa-minus"></i>
+                                </div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-label">Recall</div>
+                                <div class="metric-value" id="eligibilityRecall">0%</div>
+                                <div class="metric-trend" id="eligibilityRecallTrend">
+                                    <i class="fas fa-minus"></i>
+                                </div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-label">F1 Score</div>
+                                <div class="metric-value" id="eligibilityF1">0%</div>
+                                <div class="metric-trend" id="eligibilityF1Trend">
+                                    <i class="fas fa-minus"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Info Grid -->
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <i class="fas fa-database"></i>
+                                <span>Training Samples: <strong id="eligibilitySamples">0</strong></span>
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-calendar"></i>
+                                <span>Last Trained: <strong id="eligibilityLastTrain">Never</strong></span>
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-clock"></i>
+                                <span>Next Auto: <strong id="eligibilityNextTrain">Not scheduled</strong></span>
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-tag"></i>
+                                <span>Model Type: <strong id="eligibilityModelType">XGBoost</strong></span>
+                            </div>
+                        </div>
+
+                        <!-- Mini Performance Chart -->
+                        <div class="performance-chart">
+                            <canvas id="eligibilityChart"></canvas>
+                        </div>
+
+                        <!-- Top Features -->
+                        <div style="margin: 15px 0;" id="eligibilityFeatures">
+                            <small class="text-muted">Loading features...</small>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="model-actions">
+                            <button class="btn btn-outline" onclick="viewModelDetails('eligibility')">
+                                <i class="fas fa-chart-bar"></i> Details
+                            </button>
+                            <button class="btn btn-outline" onclick="quickTrain('eligibility')">
+                                <i class="fas fa-flask"></i> Quick Train
+                            </button>
+                            <button class="btn btn-warning" onclick="confirmRetrain('eligibility')">
+                                <i class="fas fa-sync-alt"></i> Retrain
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Selection Model Card -->
+                <div class="model-card animate__animated animate__fadeInUp animate__delay-1s" id="selectionCard">
+                    <div class="model-header">
+                        <div class="model-title">
+                            <div class="model-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div class="model-name">
+                                <h4>Selection Predictor</h4>
+                                <span class="model-version" id="selectionVersion">v1.5.2</span>
+                            </div>
+                        </div>
+                        <span class="model-badge badge-production" id="selectionStatus">Production</span>
+                    </div>
+
+                    <div class="model-body">
+                        <!-- Metrics -->
+                        <div class="metrics-grid">
+                            <div class="metric-item">
+                                <div class="metric-label">RMSE</div>
+                                <div class="metric-value" id="selectionRmse">0.000</div>
+                                <div class="metric-trend down" id="selectionRmseTrend">
+                                    <i class="fas fa-minus"></i>
+                                </div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-label">MAE</div>
+                                <div class="metric-value" id="selectionMae">0.000</div>
+                                <div class="metric-trend down" id="selectionMaeTrend">
+                                    <i class="fas fa-minus"></i>
+                                </div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-label">R²</div>
+                                <div class="metric-value" id="selectionR2">0.000</div>
+                                <div class="metric-trend" id="selectionR2Trend">
+                                    <i class="fas fa-minus"></i>
+                                </div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-label">Confidence</div>
+                                <div class="metric-value" id="selectionConfidence">0%</div>
+                                <div class="metric-trend" id="selectionConfidenceTrend">
+                                    <i class="fas fa-minus"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Info Grid -->
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <i class="fas fa-database"></i>
+                                <span>Training Samples: <strong id="selectionSamples">0</strong></span>
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-calendar"></i>
+                                <span>Last Trained: <strong id="selectionLastTrain">Never</strong></span>
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-clock"></i>
+                                <span>Next Auto: <strong id="selectionNextTrain">Not scheduled</strong></span>
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-cubes"></i>
+                                <span>Ensemble: <strong id="selectionEnsemble">4 models</strong></span>
+                            </div>
+                        </div>
+
+                        <!-- Ensemble Weights -->
+                        <div style="margin: 15px 0;" id="ensembleWeights">
+                            <small class="text-muted">Loading ensemble weights...</small>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="model-actions">
+                            <button class="btn btn-outline" onclick="viewModelDetails('selection')">
+                                <i class="fas fa-chart-bar"></i> Details
+                            </button>
+                            <button class="btn btn-outline" onclick="quickTrain('selection')">
+                                <i class="fas fa-flask"></i> Quick Train
+                            </button>
+                            <button class="btn btn-warning" onclick="confirmRetrain('selection')">
+                                <i class="fas fa-sync-alt"></i> Retrain
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Training Logs -->
+            <div class="logs-container animate__animated animate__fadeInUp">
+                <div class="logs-header">
+                    <h5><i class="fas fa-history me-2 text-secondary"></i>Recent Training Logs</h5>
+                    <button class="btn btn-sm btn-outline" onclick="refreshLogs()">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+                <div id="trainingLogs">
+                    <div class="text-center p-4">
+                        <div class="spinner-border text-secondary"></div>
+                        <p class="mt-2">Loading logs...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Version History -->
+            <div class="version-history animate__animated animate__fadeInUp animate__delay-2s">
+                <div class="history-header">
+                    <h5><i class="fas fa-code-branch me-2 text-secondary"></i>Model Version History</h5>
+                    <div class="history-filters">
+                        <select id="versionFilter" onchange="filterVersions()">
+                            <option value="all">All Models</option>
+                            <option value="eligibility">Eligibility Only</option>
+                            <option value="selection">Selection Only</option>
+                        </select>
+                        <button class="btn btn-sm btn-outline" onclick="refreshVersions()">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="version-table">
+                        <thead>
+                            <tr>
+                                <th>Model</th>
+                                <th>Version</th>
+                                <th>Date</th>
+                                <th>Accuracy</th>
+                                <th>Samples</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="versionHistoryBody">
+                            <tr>
+                                <td colspan="7" class="text-center py-4">
+                                    <div class="spinner-border text-secondary"></div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Auto-Training Schedule -->
+            <div class="schedule-card animate__animated animate__fadeInUp animate__delay-2s">
+                <div class="schedule-header">
+                    <h5><i class="fas fa-clock me-2 text-secondary"></i>Auto-Training Schedule</h5>
+                    <div class="schedule-toggle">
+                        <span class="text-muted me-2">Enable Auto-Train</span>
+                        <div class="toggle-switch active" id="autoTrainToggle" onclick="toggleAutoTrain(this)">
+                            <div class="toggle-slider"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Frequency</label>
+                        <select class="form-control" id="trainFrequency">
+                            <option value="daily">Daily (2 AM)</option>
+                            <option value="weekly" selected>Weekly (Sunday 2 AM)</option>
+                            <option value="monthly">Monthly (1st day 2 AM)</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Min. New Data</label>
+                        <input type="number" class="form-control" id="minNewData" value="100" min="10">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Keep Versions</label>
+                        <input type="number" class="form-control" id="keepVersions" value="5" min="1" max="10">
+                    </div>
+                </div>
+
+                <div class="mt-3 text-end">
+                    <button class="btn btn-primary" onclick="saveSchedule()">
+                        <i class="fas fa-save me-2"></i>Save Schedule
+                    </button>
+                    <button class="btn btn-outline ms-2" onclick="trainAllModels()">
+                        <i class="fas fa-play me-2"></i>Train All Now
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <script src="../js/main.js"></script>
+    <script>
+        // ===== GLOBAL VARIABLES =====
+        let modelData = null;
+        let refreshInterval = null;
+
+        // ===== INITIALIZATION =====
+        document.addEventListener('DOMContentLoaded', function () {
+            loadAdminInfo();
+            loadAllModelData();
+            loadSavedSchedule();
+
+            // Auto-refresh every 30 seconds
+            refreshInterval = setInterval(loadAllModelData, 30000);
+        });
+
+        // ===== LOADING FUNCTIONS =====
+        async function loadAllModelData() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/admin/models/performance`, {
+                    headers: getAuthHeaders()
+                });
+
+                if (response.ok) {
+                    modelData = await response.json();
+                    updateUI(modelData);
+                    updateSystemStatus(modelData);
+                } else {
+                    showNotification('Failed to load model data', 'danger');
+                }
+            } catch (error) {
+                console.error('Error loading model data:', error);
+                showNotification('Network error', 'danger');
+            }
+        }
+
+        // ===== UPDATE UI FUNCTIONS =====
+        function updateUI(data) {
+            updateEligibilityModel(data.eligibility);
+            updateSelectionModel(data.selection);
+            updateVersionHistory(data.versions || []);
+            updateTrainingLogs(data.recent_logs || []);
+        }
+
+        function updateEligibilityModel(model) {
+            if (!model || model.status !== 'trained') {
+                // Show untrained state
+                document.getElementById('eligibilityStatus').textContent = 'Not Trained';
+                document.getElementById('eligibilityStatus').className = 'model-badge badge-warning';
+                document.getElementById('eligibilityAccuracy').textContent = '0%';
+                document.getElementById('eligibilityPrecision').textContent = '0%';
+                document.getElementById('eligibilityRecall').textContent = '0%';
+                document.getElementById('eligibilityF1').textContent = '0%';
+                document.getElementById('eligibilitySamples').textContent = '0';
+                document.getElementById('eligibilityLastTrain').textContent = 'Never';
+                document.getElementById('eligibilityFeatures').innerHTML =
+                    '<small class="text-muted">Model not trained yet. Click "Quick Train" to start.</small>';
+                return;
+            }
+
+            document.getElementById('eligibilityStatus').textContent = 'Production';
+            document.getElementById('eligibilityStatus').className = 'model-badge badge-production';
+            document.getElementById('eligibilityAccuracy').textContent = (model.accuracy * 100).toFixed(1) + '%';
+            document.getElementById('eligibilityPrecision').textContent = (model.precision * 100).toFixed(1) + '%';
+            document.getElementById('eligibilityRecall').textContent = (model.recall * 100).toFixed(1) + '%';
+            document.getElementById('eligibilityF1').textContent = (model.f1 * 100).toFixed(1) + '%';
+            document.getElementById('eligibilitySamples').textContent = model.samples.toLocaleString();
+            document.getElementById('eligibilityLastTrain').textContent = formatDate(model.last_train);
+            document.getElementById('eligibilityModelType').textContent = model.type || 'XGBoost';
+
+            // Show trends if available
+            if (model.accuracy_trend) {
+                document.getElementById('eligibilityAccuracyTrend').innerHTML =
+                    `<i class="fas fa-arrow-${model.accuracy_trend > 0 ? 'up' : 'down'}"></i> ${Math.abs(model.accuracy_trend * 100).toFixed(1)}%`;
+            }
+
+            // Show features
+            let featuresHtml = '<small class="text-muted">Top Features:</small><div class="d-flex flex-wrap gap-2 mt-2">';
+            if (model.features) {
+                Object.entries(model.features).slice(0, 4).forEach(([feature, weight]) => {
+                    featuresHtml += `<span class="badge bg-light text-dark p-2">${feature} (${(weight / 100).toFixed(0)}%)</span>`;
+                });
+            }
+            featuresHtml += '</div>';
+            document.getElementById('eligibilityFeatures').innerHTML = featuresHtml;
+
+            const nextAuto = model.next_train || localStorage.getItem('nextAutoTrain');
+            if (nextAuto) {
+                document.getElementById('eligibilityNextTrain').textContent = formatDate(nextAuto);
+            } else {
+                // Calculate default next auto (next Sunday)
+                const nextSunday = new Date();
+                nextSunday.setDate(nextSunday.getDate() + (7 - nextSunday.getDay()));
+                nextSunday.setHours(2, 0, 0, 0);
+                document.getElementById('eligibilityNextTrain').textContent = formatDate(nextSunday);
+            }
+        }
+
+        function updateSelectionModel(model) {
+            if (!model || model.status !== 'trained') {
+                document.getElementById('selectionStatus').textContent = 'Not Trained';
+                document.getElementById('selectionStatus').className = 'model-badge badge-warning';
+                document.getElementById('selectionRmse').textContent = '0.000';
+                document.getElementById('selectionMae').textContent = '0.000';
+                document.getElementById('selectionR2').textContent = '0.000';
+                document.getElementById('selectionConfidence').textContent = '0%';
+                document.getElementById('selectionSamples').textContent = '0';
+                document.getElementById('selectionLastTrain').textContent = 'Never';
+                return;
+            }
+
+            document.getElementById('selectionStatus').textContent = 'Production';
+            document.getElementById('selectionStatus').className = 'model-badge badge-production';
+            document.getElementById('selectionRmse').textContent = model.rmse.toFixed(3);
+            document.getElementById('selectionMae').textContent = model.mae.toFixed(3);
+            document.getElementById('selectionR2').textContent = model.r2.toFixed(3);
+            document.getElementById('selectionConfidence').textContent = (model.confidence * 100).toFixed(0) + '%';
+            document.getElementById('selectionSamples').textContent = model.samples.toLocaleString();
+            document.getElementById('selectionLastTrain').textContent = formatDate(model.last_train);
+
+
+            const nextAuto = model.next_train || localStorage.getItem('nextAutoTrain');
+            if (nextAuto) {
+                document.getElementById('selectionNextTrain').textContent = formatDate(nextAuto);
+            } else {
+                const nextSunday = new Date();
+                nextSunday.setDate(nextSunday.getDate() + (7 - nextSunday.getDay()));
+                nextSunday.setHours(2, 0, 0, 0);
+                document.getElementById('selectionNextTrain').textContent = formatDate(nextSunday);
+            }
+            // Show ensemble weights
+            let weightsHtml = '<small class="text-muted">Ensemble Weights:</small><div class="d-flex gap-3 mt-2">';
+            if (model.ensemble) {
+                Object.entries(model.ensemble).forEach(([name, weight]) => {
+                    const color = name === 'dnn' ? 'primary' :
+                        name === 'xgb' ? 'success' :
+                            name === 'lgb' ? 'warning' : 'info';
+                    weightsHtml += `<div><span class="badge bg-${color}">${name.toUpperCase()} ${(weight * 100).toFixed(0)}%</span></div>`;
+                });
+            }
+            weightsHtml += '</div>';
+            document.getElementById('ensembleWeights').innerHTML = weightsHtml;
+        }
+
+        function updateSystemStatus(data) {
+            const allTrained = data.eligibility?.status === 'trained' && data.selection?.status === 'trained';
+
+            if (allTrained) {
+                document.getElementById('systemHealthDot').className = 'status-dot';
+                document.getElementById('systemHealthText').textContent = 'System Healthy - All models operational';
+            } else {
+                document.getElementById('systemHealthDot').className = 'status-dot warning';
+                document.getElementById('systemHealthText').textContent = 'System Warning - Some models not trained';
+            }
+
+            // Show last auto-train
+            const lastTrain = data.eligibility?.last_train || data.selection?.last_train;
+            if (lastTrain) {
+                document.getElementById('lastAutoTrain').innerHTML =
+                    `<i class="far fa-clock"></i> Last trained: ${formatDate(lastTrain)}`;
+            }
+        }
+
+        function updateVersionHistory(versions) {
+            const tbody = document.getElementById('versionHistoryBody');
+
+            if (!versions || versions.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="text-center py-4">No version history found</td></tr>';
+                return;
+            }
+
+            let html = '';
+            versions.forEach(v => {
+                const isCurrent = v.current ? 'version-current' : '';
+                const currentBadge = v.current ?
+                    '<span class="badge-current">Current</span>' :
+                    '<span class="badge-archived">Archived</span>';
+
+                html += `
+                    <tr class="${isCurrent}">
+                        <td>${v.model === 'eligibility' ? 'Eligibility' : 'Selection'}</td>
+                        <td><code>${v.version}</code></td>
+                        <td>${formatDateTime(v.date)}</td>
+                        <td>${v.accuracy.toFixed(1)}%</td>
+                        <td>${v.samples.toLocaleString()}</td>
+                        <td>${currentBadge}</td>
+                        <td>
+                            <button class="rollback-btn" onclick="viewVersion('${v.model}', '${v.version}')">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            ${!v.current ? `
+                                <button class="rollback-btn ms-1" onclick="rollbackModel('${v.model}', ${v.id})">
+                                    <i class="fas fa-undo-alt"></i>
+                                </button>
+                            ` : ''}
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tbody.innerHTML = html;
+        }
+
+        function updateTrainingLogs(logs) {
+            const logsDiv = document.getElementById('trainingLogs');
+
+            if (!logs || logs.length === 0) {
+                logsDiv.innerHTML = '<div class="text-center p-4 text-muted">No training logs found</div>';
+                return;
+            }
+
+            let html = '';
+            logs.forEach(log => {
+                const iconClass = log.status === 'completed' ? 'success' :
+                    log.status === 'failed' ? 'failed' : 'pending';
+                const icon = log.status === 'completed' ? 'check-circle' :
+                    log.status === 'failed' ? 'exclamation-circle' : 'clock';
+
+                html += `
+                    <div class="log-item">
+                        <div class="log-icon ${iconClass}">
+                            <i class="fas fa-${icon}"></i>
+                        </div>
+                        <div class="log-content">
+                            <div class="log-title">${log.model} Model - ${log.status}</div>
+                            <div class="log-meta">${log.message || 'Training completed'}</div>
+                        </div>
+                        <div class="log-time">${timeAgo(log.started_at)}</div>
+                    </div>
+                `;
+            });
+
+            logsDiv.innerHTML = html;
+        }
+
+        // ===== ACTION FUNCTIONS =====
+        function showLoading() {
+            document.getElementById('loadingOverlay').style.display = 'flex';
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingOverlay').style.display = 'none';
+        }
+
+        async function refreshAllData() {
+            showLoading();
+            await loadAllModelData();
+
+            // Force UI update with current data
+            if (modelData) {
+                updateSystemStatus(modelData);
+            }
+
+            setTimeout(hideLoading, 500);
+        }
+
+        function refreshLogs() {
+            loadAllModelData();
+        }
+
+        function refreshVersions() {
+            loadAllModelData();
+        }
+
+        function filterVersions() {
+            const filter = document.getElementById('versionFilter').value;
+            if (!modelData || !modelData.versions) return;
+
+            if (filter === 'all') {
+                updateVersionHistory(modelData.versions);
+            } else {
+                const filtered = modelData.versions.filter(v => v.model === filter);
+                updateVersionHistory(filtered);
+            }
+        }
+
+        async function quickTrain(modelType) {
+            const modelName = modelType === 'eligibility' ? 'Eligibility' : 'Selection';
+            const samples = modelType === 'eligibility' ? 2000 : 3000;
+
+            Swal.fire({
+                title: 'Quick Train',
+                text: `Start quick training for ${modelName} model?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#F59E0B',
+                confirmButtonText: 'Yes, start',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    startRetrain(modelType, samples);  // ← यहाँ samples भेजो
+                }
+            });
+        }
+
+        function confirmRetrain(modelType) {
+            const modelName = modelType === 'eligibility' ? 'Eligibility Predictor' : 'Selection Predictor';
+            const samples = modelType === 'eligibility' ? 2000 : 3000;
+
+            Swal.fire({
+                title: '⚠️ Retrain Model?',
+                html: `
+            <div style="text-align: left">
+                <p><strong>Model:</strong> ${modelName}</p>
+                <p><strong>Estimated Time:</strong> 2-5 minutes</p>
+                <hr>
+                <p class="text-warning">
+                    <i class="fas fa-info-circle"></i> 
+                    Current version will be archived. You can rollback if needed.
+                </p>
+            </div>
+        `,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#F59E0B',
+                cancelButtonColor: '#6B7280',
+                confirmButtonText: 'Yes, retrain now',
+                cancelButtonText: 'Cancel',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    startRetrain(modelType, samples);  // ← यहाँ samples भेजो
+                }
+            });
+        }
+
+        async function startRetrain(modelType, samples) {
+            showLoading();
+
+            Swal.fire({
+                title: 'Training Started',
+                html: `
+            <div class="text-center">
+                <div class="spinner-border text-warning mb-3"></div>
+                <p>Training in progress...</p>
+                <p class="text-muted small">You'll be notified when complete</p>
+            </div>
+        `,
+                showConfirmButton: false,
+                allowOutsideClick: false
+            });
+
+            try {
+                // ← यहाँ samples को URL में add किया
+                const response = await fetch(`${API_BASE_URL}/admin/models/train/${modelType}?n_samples=${samples}`, {
+                    method: 'POST',
+                    headers: getAuthHeaders()
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Training Started!',
+                        html: `
+                    <p>✅ Model training started in background</p>
+                    <p class="text-muted small">Estimated time: ${data.estimated_time || '2-5 minutes'}</p>
+                `,
+                        confirmButtonColor: '#10B981'
+                    });
+
+                    // Refresh after delay
+                    setTimeout(() => {
+                        refreshAllData();
+                    }, 10000);
+
+                } else {
+                    throw new Error('Failed to start training');
+                }
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Training Failed',
+                    text: error.message
+                });
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function viewModelDetails(modelType) {
+            const model = modelType === 'eligibility' ? modelData?.eligibility : modelData?.selection;
+
+            if (!model || model.status !== 'trained') {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Model Not Trained',
+                    text: 'Train the model first to view details'
+                });
+                return;
+            }
+
+            let detailsHtml = '';
+            if (modelType === 'eligibility') {
+                detailsHtml = `
+                    <div class="text-start">
+                        <h6>Confusion Matrix</h6>
+                        <pre class="bg-light p-2">
+High:  ${Math.round(model.samples * model.accuracy * 0.4)} correct, 
+      ${Math.round(model.samples * (1 - model.accuracy) * 0.3)} wrong
+Medium: ${Math.round(model.samples * model.accuracy * 0.35)} correct, 
+       ${Math.round(model.samples * (1 - model.accuracy) * 0.4)} wrong
+Low:   ${Math.round(model.samples * model.accuracy * 0.25)} correct, 
+       ${Math.round(model.samples * (1 - model.accuracy) * 0.3)} wrong
+                        </pre>
+                    </div>
+                `;
+            } else {
+                detailsHtml = `
+                    <div class="text-start">
+                        <h6>Model Performance</h6>
+                        <p>RMSE: ${model.rmse.toFixed(3)} - Average error in predictions</p>
+                        <p>MAE: ${model.mae.toFixed(3)} - Mean absolute error</p>
+                        <p>R²: ${model.r2.toFixed(3)} - Variance explained by model</p>
+                    </div>
+                `;
+            }
+
+            Swal.fire({
+                title: `${modelType === 'eligibility' ? 'Eligibility' : 'Selection'} Model Details`,
+                html: detailsHtml,
+                width: 600
+            });
+        }
+
+        async function rollbackModel(modelType, versionId) {
+            Swal.fire({
+                title: 'Rollback Model?',
+                text: 'Are you sure you want to rollback to this version?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#F59E0B',
+                confirmButtonText: 'Yes, rollback',
+                cancelButtonText: 'Cancel'
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    showLoading();
+
+                    try {
+                        const response = await fetch(`${API_BASE_URL}/admin/models/rollback/${modelType}/${versionId}`, {
+                            method: 'POST',
+                            headers: getAuthHeaders()
+                        });
+
+                        if (response.ok) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Rollback Complete',
+                                text: 'Model rolled back successfully',
+                                timer: 2000
+                            });
+                            refreshAllData();
+                        } else {
+                            throw new Error('Rollback failed');
+                        }
+                    } catch (error) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Rollback Failed',
+                            text: error.message
+                        });
+                    } finally {
+                        hideLoading();
+                    }
+                }
+            });
+        }
+
+        function toggleAutoTrain(element) {
+            element.classList.toggle('active');
+
+            const isActive = element.classList.contains('active');
+            Swal.fire({
+                icon: 'success',
+                title: isActive ? 'Auto-Train Enabled' : 'Auto-Train Disabled',
+                text: isActive ? 'Models will train automatically as per schedule' : 'Manual training only',
+                timer: 2000,
+                showConfirmButton: false
+            });
+
+            // Save to localStorage
+            localStorage.setItem('autoTrainEnabled', isActive);
+        }
+
+        function saveSchedule() {
+            const frequency = document.getElementById('trainFrequency').value;
+            const minData = document.getElementById('minNewData').value;
+            const keepVersions = document.getElementById('keepVersions').value;
+
+            const nextTrain = calculateNextTrainDate(frequency);
+
+            localStorage.setItem('autoTrainFrequency', frequency);
+            localStorage.setItem('autoTrainMinData', minData);
+            localStorage.setItem('autoTrainKeepVersions', keepVersions);
+            localStorage.setItem('nextAutoTrain', nextTrain.toISOString());
+
+            document.getElementById('eligibilityNextTrain').textContent = formatDate(nextTrain);
+            document.getElementById('selectionNextTrain').textContent = formatDate(nextTrain);
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Schedule Saved',
+                text: 'Auto-training schedule updated successfully',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        }
+
+        function calculateNextTrainDate(frequency) {
+            const now = new Date();
+            let next = new Date(now);
+
+            switch (frequency) {
+                case 'daily':
+                    next.setDate(next.getDate() + 1);
+                    break;
+                case 'weekly':
+                    next.setDate(next.getDate() + (7 - next.getDay()));
+                    break;
+                case 'monthly':
+                    next.setMonth(next.getMonth() + 1);
+                    next.setDate(1);
+                    break;
+            }
+
+            next.setHours(2, 0, 0, 0); // 2 AM
+            return next;
+        }
+
+        function loadSavedSchedule() {
+            const enabled = localStorage.getItem('autoTrainEnabled') !== 'false';
+            const frequency = localStorage.getItem('autoTrainFrequency') || 'weekly';
+            const minData = localStorage.getItem('autoTrainMinData') || '100';
+            const keepVersions = localStorage.getItem('autoTrainKeepVersions') || '5';
+
+            if (enabled) {
+                document.getElementById('autoTrainToggle').classList.add('active');
+            }
+            document.getElementById('trainFrequency').value = frequency;
+            document.getElementById('minNewData').value = minData;
+            document.getElementById('keepVersions').value = keepVersions;
+        }
+
+        async function trainAllModels() {
+            Swal.fire({
+                title: 'Train All Models?',
+                text: 'This will train both Eligibility and Selection models. This may take 5-10 minutes.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#F59E0B',
+                confirmButtonText: 'Yes, train all',
+                cancelButtonText: 'Cancel'
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    showLoading();
+
+                    try {
+                        // Train eligibility first
+                        await fetch(`${API_BASE_URL}/admin/models/train/eligibility`, {
+                            method: 'POST',
+                            headers: getAuthHeaders()
+                        });
+
+                        // Train selection
+                        await fetch(`${API_BASE_URL}/admin/models/train/selection`, {
+                            method: 'POST',
+                            headers: getAuthHeaders()
+                        });
+
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Training Started',
+                            text: 'Both models are training in background. You will be notified when complete.',
+                            confirmButtonColor: '#10B981'
+                        });
+
+                        setTimeout(refreshAllData, 10000);
+
+                    } catch (error) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Failed to start training'
+                        });
+                    } finally {
+                        hideLoading();
+                    }
+                }
+            });
+        }
+
+        // ===== UTILITY FUNCTIONS =====
+        function formatDate(dateString) {
+            if (!dateString) return 'Never';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', {
+                day: 'numeric', month: 'short', year: 'numeric'
+            });
+        }
+
+        function formatDateTime(dateString) {
+            if (!dateString) return 'N/A';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', {
+                day: 'numeric', month: 'short', year: 'numeric',
+                hour: '2-digit', minute: '2-digit'
+            });
+        }
+
+        function timeAgo(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const seconds = Math.floor((now - date) / 1000);
+
+            if (seconds < 60) return 'just now';
+            if (seconds < 3600) return Math.floor(seconds / 60) + ' minutes ago';
+            if (seconds < 86400) return Math.floor(seconds / 3600) + ' hours ago';
+            return Math.floor(seconds / 86400) + ' days ago';
+        }
+
+        // ===== CHART INITIALIZATION =====
+        document.addEventListener('DOMContentLoaded', function () {
+            const eligCtx = document.getElementById('eligibilityChart')?.getContext('2d');
+            if (eligCtx) {
+                new Chart(eligCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                        datasets: [{
+                            label: 'Accuracy',
+                            data: [86, 87, 88, 88.5],
+                            borderColor: '#10B981',
+                            backgroundColor: 'rgba(16,185,129,0.1)',
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: { y: { beginAtZero: true, max: 100 } }
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Train AI Models | Admin</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/placement-theme.css">
+    
+    <style>
+        .sidebar {
+            background: #0A1929;
+            min-height: 100vh;
+            position: fixed;
+            width: 260px;
+            color: white;
+        }
+        .sidebar-header {
+            padding: 30px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .sidebar-nav a {
+            display: block;
+            padding: 12px 25px;
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        .sidebar-nav a:hover,
+        .sidebar-nav a.active {
+            background: rgba(240,185,11,0.1);
+            color: #F0B90B;
+            border-left: 3px solid #F0B90B;
+        }
+        .sidebar-nav a i {
+            width: 25px;
+            margin-right: 10px;
+        }
+        .main-content {
+            margin-left: 260px;
+            padding: 30px;
+        }
+        .top-bar {
+            background: white;
+            padding: 15px 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .model-card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 1px solid #E5E7EB;
+            transition: all 0.3s;
+            height: 100%;
+        }
+        .model-card:hover {
+            border-color: #F0B90B;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .model-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #0A1929, #F0B90B);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        .status-trained {
+            background: #D4EDDA;
+            color: #155724;
+        }
+        .status-untrained {
+            background: #F8D7DA;
+            color: #721C24;
+        }
+        .metric-box {
+            background: #F8FAFC;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #E5E7EB;
+        }
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #0A1929;
+        }
+        .metric-label {
+            font-size: 0.8rem;
+            color: #6B7280;
+        }
+        .progress-sm {
+            height: 8px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h4><i class="fas fa-graduation-cap me-2" style="color: #F0B90B;"></i>Admin Panel</h4>
+            <small>Placement System</small>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <a href="dashboard.html"><i class="fas fa-chart-pie"></i> Dashboard</a>
+            <a href="companies.html"><i class="fas fa-building"></i> Companies</a>
+            <a href="drives.html"><i class="fas fa-briefcase"></i> Drives</a>
+            <a href="students.html"><i class="fas fa-users"></i> Students</a>
+            <a href="analytics.html"><i class="fas fa-chart-line"></i> Analytics</a>
+            <a href="models-dashboard.html" class="active"><i class="fas fa-robot"></i> AI Models</a>
+            <a href="export-reports.html"><i class="fas fa-download"></i> Export</a>
+            <a href="rank-candidates.html"><i class="fas fa-chart-line"></i> Ranking</a>
+            <a href="#" onclick="adminLogout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <h4 class="fw-bold mb-0">
+                <i class="fas fa-robot me-2 text-secondary"></i>
+                AI Model Training
+            </h4>
+            <div class="d-flex align-items-center">
+                <span class="fw-bold" id="adminName">Admin</span>
+            </div>
+        </div>
+
+        <!-- Model Status -->
+        <div class="row mb-4" id="modelStatus">
+            <div class="col-12">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Loading model status...
+                </div>
+            </div>
+        </div>
+
+        <!-- Training Cards -->
+        <div class="row">
+            <!-- Eligibility Model V2 -->
+            <div class="col-md-6 mb-4">
+                <div class="model-card">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="model-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <span class="status-badge" id="eligibilityStatus">Loading...</span>
+                    </div>
+                    
+                    <h5>Eligibility Predictor V2</h5>
+                    <p class="text-muted small">XGBoost/LightGBM - Predicts High/Medium/Low eligibility</p>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Model Type</label>
+                        <select class="form-control" id="eligibilityModelType">
+                            <option value="xgboost">XGBoost (Recommended)</option>
+                            <option value="lightgbm">LightGBM</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Training Samples: <span id="eligibilitySamplesValue">2000</span></label>
+                        <input type="range" class="form-range" id="eligibilitySamples" min="500" max="5000" value="2000" step="500">
+                    </div>
+                    
+                    <button class="btn btn-primary w-100 mb-3" onclick="trainEligibilityModel()" id="trainEligibilityBtn">
+                        <i class="fas fa-play me-2"></i>Train Eligibility Model
+                    </button>
+                    
+                    <div id="eligibilityResults" style="display: none;">
+                        <hr>
+                        <h6 class="mb-3">Training Results:</h6>
+                        <div class="row" id="eligibilityMetrics"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Selection Model V2 -->
+            <div class="col-md-6 mb-4">
+                <div class="model-card">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="model-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <span class="status-badge" id="selectionStatus">Loading...</span>
+                    </div>
+                    
+                    <h5>Selection Predictor V2</h5>
+                    <p class="text-muted small">Ensemble (DNN + XGBoost + LightGBM) with confidence scores</p>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Training Data</label>
+                        <select class="form-control" id="useRealData">
+                            <option value="true">Use Real Database Data</option>
+                            <option value="false">Use Synthetic Data</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Training Epochs: <span id="epochsValue">150</span></label>
+                        <input type="range" class="form-range" id="trainEpochs" min="50" max="500" value="150" step="10">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Synthetic Samples: <span id="samplesValue">3000</span></label>
+                        <input type="range" class="form-range" id="samplesCount" min="1000" max="5000" value="3000" step="500">
+                    </div>
+                    
+                    <button class="btn btn-primary w-100 mb-3" onclick="trainSelectionModel()" id="trainSelectionBtn">
+                        <i class="fas fa-play me-2"></i>Train Selection Model
+                    </button>
+                    
+                    <div id="selectionResults" style="display: none;">
+                        <hr>
+                        <h6 class="mb-3">Training Results:</h6>
+                        <div class="row" id="selectionMetrics"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Model Performance Dashboard -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <i class="fas fa-chart-bar me-2 text-secondary"></i>
+                Model Performance Dashboard
+            </div>
+            <div class="card-body">
+                <div class="row" id="performanceDashboard">
+                    <div class="col-md-6">
+                        <h6 class="mb-3">Eligibility Model Performance</h6>
+                        <div id="eligibilityPerformance">
+                            <p class="text-muted">Train a model to see performance metrics</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="mb-3">Selection Model Performance</h6>
+                        <div id="selectionPerformance">
+                            <p class="text-muted">Train a model to see performance metrics</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/main.js"></script>
+    <script>
+        const token = localStorage.getItem('token');
+        const role = localStorage.getItem('role');
+        
+        if (!token || role !== 'admin') {
+            window.location.href = '../index.html';
+        }
+
+        // Update range displays
+        document.getElementById('eligibilitySamples').addEventListener('input', function(e) {
+            document.getElementById('eligibilitySamplesValue').textContent = e.target.value;
+        });
+        
+        document.getElementById('trainEpochs').addEventListener('input', function(e) {
+            document.getElementById('epochsValue').textContent = e.target.value;
+        });
+        
+        document.getElementById('samplesCount').addEventListener('input', function(e) {
+            document.getElementById('samplesValue').textContent = e.target.value;
+        });
+
+        // Check model status on load
+        async function checkModelStatus() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/admin/models/performance`, {
+                    headers: getAuthHeaders()
+                });
+                
+                if (response.ok) {
+                    const status = await response.json();
+                    
+                    // Update eligibility status
+                    const eligStatus = document.getElementById('eligibilityStatus');
+                    if (status.eligibility?.status === 'trained') {
+                        eligStatus.textContent = '✅ Trained';
+                        eligStatus.className = 'status-badge status-trained';
+                    } else {
+                        eligStatus.textContent = '❌ Not Trained';
+                        eligStatus.className = 'status-badge status-untrained';
+                    }
+                    
+                    // Update selection status
+                    const selStatus = document.getElementById('selectionStatus');
+                    if (status.selection?.status === 'trained') {
+                        selStatus.textContent = '✅ Trained';
+                        selStatus.className = 'status-badge status-trained';
+                    } else {
+                        selStatus.textContent = '❌ Not Trained';
+                        selStatus.className = 'status-badge status-untrained';
+                    }
+                    
+                    document.getElementById('modelStatus').innerHTML = `
+                        <div class="col-12">
+                            <div class="alert alert-success">
+                                <i class="fas fa-check-circle me-2"></i>
+                                Models loaded successfully
+                            </div>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error checking model status:', error);
+            }
+        }
+
+        // Train Eligibility Model
+        async function trainEligibilityModel() {
+            const modelType = document.getElementById('eligibilityModelType').value;
+            const samples = document.getElementById('eligibilitySamples').value;
+            
+            const btn = document.getElementById('trainEligibilityBtn');
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Training...';
+            
+            try {
+                const response = await fetch(
+                    `${API_BASE_URL}/eligibility/train?model_type=${modelType}&n_samples=${samples}`,
+                    { 
+                        method: 'POST',
+                        headers: getAuthHeaders()
+                    }
+                );
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    displayEligibilityResults(data.results);
+                    showNotification('Eligibility model trained successfully!', 'success');
+                    checkModelStatus();
+                } else {
+                    showNotification('Training failed', 'danger');
+                }
+            } catch (error) {
+                showNotification('Network error', 'danger');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        }
+
+        function displayEligibilityResults(results) {
+            document.getElementById('eligibilityResults').style.display = 'block';
+            
+            const metricsDiv = document.getElementById('eligibilityMetrics');
+            metricsDiv.innerHTML = `
+                <div class="col-6 mb-3">
+                    <div class="metric-box">
+                        <div class="metric-value">${(results.accuracy * 100).toFixed(2)}%</div>
+                        <div class="metric-label">Accuracy</div>
+                    </div>
+                </div>
+                <div class="col-6 mb-3">
+                    <div class="metric-box">
+                        <div class="metric-value">${(results.precision * 100).toFixed(2)}%</div>
+                        <div class="metric-label">Precision</div>
+                    </div>
+                </div>
+                <div class="col-6 mb-3">
+                    <div class="metric-box">
+                        <div class="metric-value">${(results.recall * 100).toFixed(2)}%</div>
+                        <div class="metric-label">Recall</div>
+                    </div>
+                </div>
+                <div class="col-6 mb-3">
+                    <div class="metric-box">
+                        <div class="metric-value">${(results.f1_score * 100).toFixed(2)}%</div>
+                        <div class="metric-label">F1-Score</div>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <hr>
+                    <h6 class="mb-2">Top Features:</h6>
+                    <ul class="small">
+                        ${Object.entries(results.feature_importance).slice(0, 5).map(([f, i]) => 
+                            `<li><strong>${f}:</strong> ${(i * 100).toFixed(2)}%</li>`
+                        ).join('')}
+                    </ul>
+                </div>
+            `;
+            
+            // Update performance dashboard
+            document.getElementById('eligibilityPerformance').innerHTML = `
+                <div class="progress mb-2">
+                    <div class="progress-bar bg-success" style="width: ${results.accuracy * 100}%">
+                        Accuracy: ${(results.accuracy * 100).toFixed(2)}%
+                    </div>
+                </div>
+                <p class="small mb-1">Classes: ${results.classes?.join(', ') || 'High, Medium, Low'}</p>
+                <p class="small">CV Score: ${(results.cv_mean * 100).toFixed(2)}% ± ${(results.cv_std * 200).toFixed(2)}%</p>
+            `;
+        }
+
+        // Train Selection Model
+        async function trainSelectionModel() {
+            const useRealData = document.getElementById('useRealData').value === 'true';
+            const epochs = document.getElementById('trainEpochs').value;
+            const samples = document.getElementById('samplesCount').value;
+            
+            const btn = document.getElementById('trainSelectionBtn');
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Training...';
+            
+            try {
+                const response = await fetch(
+                    `${API_BASE_URL}/selection/train-selection-model`,
+                    { 
+                        method: 'POST',
+                        headers: getAuthHeaders()
+                    }
+                );
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    displaySelectionResults(data);
+                    showNotification('Selection model training started!', 'success');
+                    checkModelStatus();
+                } else {
+                    showNotification('Training failed', 'danger');
+                }
+            } catch (error) {
+                showNotification('Network error', 'danger');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        }
+
+        function displaySelectionResults(results) {
+            document.getElementById('selectionResults').style.display = 'block';
+            
+            const metricsDiv = document.getElementById('selectionMetrics');
+            
+            if (results.message) {
+                metricsDiv.innerHTML = `
+                    <div class="col-12">
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            ${results.message}
+                        </div>
+                    </div>
+                `;
+            } else {
+                metricsDiv.innerHTML = `
+                    <div class="col-6 mb-3">
+                        <div class="metric-box">
+                            <div class="metric-value">${(results.ensemble_weights?.dnn * 100).toFixed(0)}%</div>
+                            <div class="metric-label">DNN Weight</div>
+                        </div>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <div class="metric-box">
+                            <div class="metric-value">${(results.ensemble_weights?.xgb * 100).toFixed(0)}%</div>
+                            <div class="metric-label">XGBoost Weight</div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        // Load on page load
+        checkModelStatus();
+    </script>
+</body>
+</html>

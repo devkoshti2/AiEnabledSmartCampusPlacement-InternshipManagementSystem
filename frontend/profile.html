@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile | Placement System</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/placement-theme.css">
+    
+    <style>
+        .profile-header {
+            background: linear-gradient(135deg,#6b6a7b, #1A2A3A);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            background: #F0B90B;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: #0A1929;
+            font-weight: 700;
+            margin-right: 20px;
+        }
+        .completion-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .skill-badge {
+            background: linear-gradient(135deg, #0A1929, #F0B90B);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            margin: 0 5px 10px 0;
+            display: inline-block;
+        }
+        .alert-resume {
+            background: #FFF3E0;
+            border-left: 4px solid #F0B90B;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .parsed-badge {
+            background: #27AE60;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            margin-left: 10px;
+        }
+        .readonly-field {
+            background-color: #f8f9fa;
+            cursor: not-allowed;
+        }
+        .auto-filled {
+            border-left: 4px solid #27AE60 !important;
+            background-color: #f0fff4;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="dashboard.html">
+                <i class="fas fa-graduation-cap"></i>
+                Placement System
+            </a>
+            
+            <div class="d-flex align-items-center">
+                <div class="dropdown me-3">
+                    <button class="btn btn-link text-white position-relative p-0" data-bs-toggle="dropdown">
+                        <i class="fas fa-bell fs-5"></i>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-secondary" 
+                              id="notificationBadge" style="display: none;">0</span>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-end" style="width: 320px;" id="notificationList">
+                        <div class="text-center p-3">Loading...</div>
+                    </div>
+                </div>
+                
+                <div class="dropdown">
+                    <button class="btn btn-link text-white text-decoration-none d-flex align-items-center" data-bs-toggle="dropdown">
+                        <span class="me-2 d-none d-md-inline" id="userName">Student</span>
+                        <i class="fas fa-user-circle fs-4"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="dashboard.html">Dashboard</a></li>
+                        <li><a class="dropdown-item" href="applications.html">Applications</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="#" onclick="logout()">Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-4">
+        <!-- Profile Header -->
+        <div class="profile-header d-flex align-items-center">
+            <div class="profile-avatar">
+                <span id="avatarInitial">JD</span>
+            </div>
+            <div>
+                <h2 class="fw-bold mb-1" id="profileName">Loading...</h2>
+                <p class="mb-0 opacity-75" id="profileEmail"></p>
+            </div>
+        </div>
+
+        <!-- Profile Completion -->
+        <div class="completion-card">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h6 class="fw-bold mb-0"><i class="fas fa-chart-line me-2 text-secondary"></i>Profile Completion</h6>
+                <span class="badge bg-secondary" id="completionPercent">0%</span>
+            </div>
+            <div class="progress">
+                <div class="progress-bar" id="completionBar" style="width: 0%;"></div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Profile Form -->
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-user-edit me-2 text-secondary"></i>
+                        Edit Profile
+                        <span class="parsed-badge" id="autoFilledBadge" style="display: none;">Auto-filled from Resume</span>
+                    </div>
+                    <div class="card-body">
+                        <div id="message"></div>
+                        
+                        <form id="profileForm">
+                            <!-- Name Field -->
+                            <div class="mb-3">
+                                <label class="form-label">Full Name</label>
+                                <input type="text" class="form-control" id="fullName" placeholder="Enter your full name" required>
+                                <small class="text-muted">This will be displayed on your profile</small>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Roll Number</label>
+                                    <input type="text" class="form-control" id="rollNumber" placeholder="e.g., CS001">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Branch</label>
+                                    <select class="form-control" id="branch">
+                                        <option value="">Select Branch</option>
+                                        <option value="CSE">Computer Science (CSE)</option>
+                                        <option value="IT">Information Technology (IT)</option>
+                                        <option value="ECE">Electronics (ECE)</option>
+                                        <option value="EEE">Electrical (EEE)</option>
+                                        <option value="MECH">Mechanical (MECH)</option>
+                                        <option value="CIVIL">Civil (CIVIL)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Semester</label>
+                                    <input type="number" class="form-control" id="semester" min="1" max="8" placeholder="e.g., 6">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">CGPA</label>
+                                    <input type="number" step="0.01" class="form-control" id="cgpa" min="0" max="10" placeholder="e.g., 8.5">
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Skills (comma separated)</label>
+                                <textarea class="form-control" id="skills" rows="3" placeholder="Python, Java, SQL, Machine Learning"></textarea>
+                                <small class="text-muted">Enter skills separated by commas. These will help you get better job matches.</small>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary" id="saveProfileBtn">Save Profile</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Current Skills -->
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-code me-2 text-secondary"></i>Your Skills
+                    </div>
+                    <div class="card-body" id="skillsDisplay">
+                        <p class="text-muted text-center">No skills added yet</p>
+                    </div>
+                </div>
+                
+                <!-- Resume Card with Replace/Remove Buttons -->
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <i class="fas fa-file-alt me-2 text-secondary"></i>Resume
+                    </div>
+                    <div class="card-body text-center">
+                        <i class="fas fa-cloud-upload-alt fa-3x text-secondary mb-3"></i>
+                        <p id="resumeStatus">No resume uploaded</p>
+                        
+                        <!-- Show current resume filename -->
+                        <div id="currentResumeInfo" style="display: none;" class="mb-2">
+                            <i class="fas fa-file-pdf text-danger me-1"></i>
+                            <small class="text-muted">Current: <span id="currentResumeName"></span></small>
+                        </div>
+                        
+                        <div class="d-flex gap-2 justify-content-center flex-wrap">
+                            <a href="upload-resume.html" class="btn btn-sm btn-outline-primary" id="uploadResumeBtn">
+                                <i class="fas fa-upload"></i> 
+                                <span id="uploadBtnText">Upload Resume</span>
+                            </a>
+                            <button id="removeResumeBtn" class="btn btn-sm btn-outline-danger" style="display: none;" onclick="removeResume()">
+                                <i class="fas fa-trash"></i> Remove
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        let canEdit = true; // Resume optional hai - hamesha edit allowed
+        let parsedData = null;
+        
+        async function checkCanEdit() {
+            // Resume compulsory nahi hai - student hamesha profile edit kar sakta hai
+            canEdit = true;
+        }
+        
+        async function loadParsedData() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/upload/parsed-data`, {
+                    headers: getAuthHeaders()
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.parsed_data) {
+                        parsedData = data.parsed_data;
+                        
+                        // Show auto-filled badge
+                        document.getElementById('autoFilledBadge').style.display = 'inline-block';
+                        
+                        // Auto-fill form fields
+                        const fullName = document.getElementById('fullName');
+                        const branch = document.getElementById('branch');
+                        const cgpa = document.getElementById('cgpa');
+                        const skills = document.getElementById('skills');
+                        
+                        let autoFilled = false;
+                        
+                        // Auto-fill name
+                        if (!fullName.value && parsedData.name) {
+                            fullName.value = parsedData.name;
+                            fullName.classList.add('auto-filled');
+                            autoFilled = true;
+                        }
+                        
+                        // Auto-fill branch
+                        if (!branch.value && parsedData.branch) {
+                            // Check if branch exists in options
+                            const branchOption = Array.from(branch.options).find(opt => opt.value === parsedData.branch);
+                            if (branchOption) {
+                                branch.value = parsedData.branch;
+                                branch.classList.add('auto-filled');
+                                autoFilled = true;
+                            }
+                        }
+                        
+                        // Auto-fill CGPA
+                        if (!cgpa.value && parsedData.cgpa) {
+                            cgpa.value = parsedData.cgpa;
+                            cgpa.classList.add('auto-filled');
+                            autoFilled = true;
+                        }
+                        
+                        // Auto-fill skills in the textarea
+                        if (!skills.value && parsedData.skills && parsedData.skills.length > 0) {
+                            skills.value = parsedData.skills.join(', ');
+                            skills.classList.add('auto-filled');
+                            autoFilled = true;
+                            
+                            // Update skills display
+                            displaySkills(skills.value);
+                        }
+                        
+                        if (autoFilled) {
+                            showNotification('Profile auto-filled from your resume!', 'success');
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading parsed data:', error);
+            }
+        }
+        
+        async function loadProfile() {
+            try {
+                const user = await loadUserInfo();
+                
+                // Set avatar initial
+                const initials = user.full_name.split(' ').map(n => n[0]).join('').toUpperCase();
+                document.getElementById('avatarInitial').textContent = initials;
+                document.getElementById('profileName').textContent = user.full_name;
+                document.getElementById('profileEmail').textContent = user.email;
+                
+                // Get student profile
+                const profileRes = await fetch(`${API_BASE_URL}/student/profile`, {
+                    headers: getAuthHeaders()
+                });
+                
+                if (profileRes.ok) {
+                    const profile = await profileRes.json();
+                    
+                    document.getElementById('fullName').value = profile.full_name || user.full_name || '';
+                    document.getElementById('rollNumber').value = profile.roll_number || '';
+                    document.getElementById('branch').value = profile.branch || '';
+                    document.getElementById('semester').value = profile.semester || '';
+                    document.getElementById('cgpa').value = profile.cgpa || '';
+                    document.getElementById('skills').value = profile.skills || '';
+                    
+                    // Show skills
+                    displaySkills(profile.skills);
+                    
+                    // Calculate completion
+                    calculateCompletion(profile);
+                    
+                    // Update resume section
+                    const resumeStatus = document.getElementById('resumeStatus');
+                    const uploadBtnText = document.getElementById('uploadBtnText');
+                    const currentResumeInfo = document.getElementById('currentResumeInfo');
+                    const currentResumeName = document.getElementById('currentResumeName');
+                    const removeResumeBtn = document.getElementById('removeResumeBtn');
+                    
+                    if (profile.resume_path) {
+                        resumeStatus.innerHTML = '✅ Resume uploaded';
+                        uploadBtnText.innerHTML = 'Replace Resume';
+                        currentResumeInfo.style.display = 'block';
+                        removeResumeBtn.style.display = 'inline-block';
+                        
+                        // Extract just the filename (remove user_id and timestamp)
+                        let filename = profile.resume_path;
+                        // Remove user_id and timestamp prefix (e.g., "123_20240315_123456_")
+                        const parts = filename.split('_');
+                        if (parts.length >= 3) {
+                            filename = parts.slice(2).join('_');
+                        }
+                        currentResumeName.textContent = filename;
+                    } else {
+                        resumeStatus.innerHTML = '❌ No resume uploaded';
+                        uploadBtnText.innerHTML = 'Upload Resume';
+                        currentResumeInfo.style.display = 'none';
+                        removeResumeBtn.style.display = 'none';
+                    }
+                }
+                
+                // Check if can edit
+                await checkCanEdit();
+                
+                // Load parsed data for auto-fill
+                await loadParsedData();
+                
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+        
+        function displaySkills(skillsStr) {
+            const skillsDiv = document.getElementById('skillsDisplay');
+            if (!skillsStr) {
+                skillsDiv.innerHTML = '<p class="text-muted text-center">No skills added yet</p>';
+                return;
+            }
+            
+            const skills = skillsStr.split(',').map(s => s.trim()).filter(s => s);
+            if (skills.length === 0) {
+                skillsDiv.innerHTML = '<p class="text-muted text-center">No skills added yet</p>';
+                return;
+            }
+            
+            let html = '';
+            skills.forEach(skill => {
+                html += `<span class="skill-badge">${skill}</span>`;
+            });
+            skillsDiv.innerHTML = html;
+        }
+        
+        function calculateCompletion(profile) {
+            // Total 6 fields: name, roll_number, branch, semester, cgpa, skills
+            // resume_path optional hai - completion mein count nahi hoga
+            let total = 6;
+            let completed = 0;
+
+            // Full name
+            if (profile.full_name && profile.full_name.trim() !== '') completed++;
+            // Roll number
+            if (profile.roll_number && profile.roll_number.trim() !== '') completed++;
+            // Branch
+            if (profile.branch && profile.branch.trim() !== '') completed++;
+            // Semester
+            if (profile.semester && parseInt(profile.semester) > 0) completed++;
+            // CGPA
+            if (profile.cgpa && parseFloat(profile.cgpa) > 0) completed++;
+            // Skills
+            if (profile.skills && profile.skills.trim() !== '') completed++;
+
+            const percentage = Math.round((completed / total) * 100);
+            document.getElementById('completionBar').style.width = percentage + '%';
+            document.getElementById('completionPercent').textContent = percentage + '%';
+        }
+        
+        // Remove resume function
+        async function removeResume() {
+            // Simple confirm dialog
+            if (confirm('Are you sure you want to remove your resume? You will need to upload a new one to edit your profile.')) {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/student/remove-resume`, {
+                        method: 'DELETE',
+                        headers: getAuthHeaders()
+                    });
+                    
+                    if (response.ok) {
+                        showNotification('Resume removed successfully', 'success');
+                        // Reload profile to update UI
+                        loadProfile();
+                    } else {
+                        const error = await response.json();
+                        showNotification('Error: ' + (error.detail || 'Failed to remove resume'), 'danger');
+                    }
+                } catch (error) {
+                    showNotification('Network error', 'danger');
+                }
+            }
+        }
+        
+        document.getElementById('profileForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (!canEdit) {
+                showNotification('Please upload your resume first', 'warning');
+                return;
+            }
+            
+            const profileData = {
+                full_name: document.getElementById('fullName').value || '',
+                roll_number: document.getElementById('rollNumber').value || '',
+                branch: document.getElementById('branch').value || '',
+                semester: parseInt(document.getElementById('semester').value) || 0,
+                cgpa: parseFloat(document.getElementById('cgpa').value) || 0,
+                skills: document.getElementById('skills').value || ''
+            };
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/student/profile`, {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify(profileData)
+                });
+                
+                if (response.ok) {
+                    showNotification('Profile saved successfully!', 'success');
+                    loadProfile();
+                } else {
+                    const error = await response.json();
+                    showNotification('Error: ' + error.detail, 'danger');
+                }
+            } catch (error) {
+                showNotification('Network error', 'danger');
+            }
+        });
+        
+        if (checkAuth()) {
+            loadProfile();
+        }
+    </script>
+</body>
+</html>

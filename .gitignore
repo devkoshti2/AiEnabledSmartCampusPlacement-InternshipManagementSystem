@@ -1,0 +1,230 @@
+# ---------------------------
+# Python
+# ---------------------------
+_pycache_/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+*.pyc
+
+# ---------------------------
+# Virtual Environment
+# ---------------------------
+venv/
+env/
+ENV/
+.venv/
+virtualenv/
+
+# ---------------------------
+# Environment Variables (CRITICAL)
+# ---------------------------
+.env
+backend/.env
+.env.local
+.env.production
+.env.development
+
+# ---------------------------
+# IDE / Editor files
+# ---------------------------
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+.sublime-
+*.sublime-project
+*.sublime-workspace
+
+# ---------------------------
+# Logs
+# ---------------------------
+*.log
+logs/
+*.pid
+*.seed
+
+# ---------------------------
+# Database
+# ---------------------------
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
+
+# ---------------------------
+# AI / ML Models (Large files)
+# ---------------------------
+*.pkl
+*.pickle
+*.joblib
+*.h5
+*.hdf5
+*.model
+*.pt
+*.pth
+*.bin
+*.onnx
+*.caffemodel
+*.pb
+
+# ---------------------------
+# Training Data
+# ---------------------------
+backend/app/ai/training_data/feedback/*.json
+backend/app/ai/training_data/*.json
+!backend/app/ai/training_data/.gitkeep
+
+# ---------------------------
+# Uploaded / Media files
+# ---------------------------
+backend/app/static/uploads/*
+backend/app/static/parsed/*
+media/
+!backend/app/static/uploads/.gitkeep
+!backend/app/static/parsed/.gitkeep
+
+# ---------------------------
+# Cache
+# ---------------------------
+.cache/
+.pytest_cache/
+_pycache_/
+*.pyc
+*.pyo
+*.pyd
+*.coverage
+htmlcov/
+.tox/
+.mypy_cache/
+.ruff_cache/
+
+# ---------------------------
+# Node (if any frontend tools)
+# ---------------------------
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# ---------------------------
+# Frontend build files
+# ---------------------------
+frontend/.cache/
+*.css.map
+*.js.map
+*.min.js
+*.min.css
+
+# ---------------------------
+# Jupyter Notebook
+# ---------------------------
+.ipynb_checkpoints/
+*.ipynb
+!*.ipynb  # if you want to keep notebooks, remove this line
+
+# ---------------------------
+# OS files
+# ---------------------------
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# ---------------------------
+# Backup files
+# ---------------------------
+*.bak
+*.backup
+*.old
+*.orig
+*.tmp
+
+# ---------------------------
+# Secrets / Keys (Double safety)
+# ---------------------------
+*.key
+*.pem
+*.crt
+*.cer
+secret.key
+private.key
+oauth_token
+*.secret
+
+# ---------------------------
+# Docker
+# ---------------------------
+.dockerignore
+Dockerfile
+docker-compose*.yml
+!docker-compose.yml.example
+
+# ---------------------------
+# Testing
+# ---------------------------
+.coverage
+.coverage.*
+.coveragerc
+nosetests.xml
+unittest.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# ---------------------------
+# Project specific - Large model files
+# ---------------------------
+backend/app/ai/models/eligibility_v2/*.pkl
+backend/app/ai/models/eligibility_v2/*.joblib
+backend/app/ai/models/skill_models/*.pkl
+backend/app/ai/models/skill_models/*.joblib
+backend/app/ai/models/*.pkl
+backend/app/ai/models/*.joblib
+
+# Keep model directory structure
+!backend/app/ai/models/eligibility_v2/.gitkeep
+!backend/app/ai/models/skill_models/.gitkeep
+
+# ---------------------------
+# Temporary files
+# ---------------------------
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+\#*\#
+.\#*
+
+# ---------------------------
+# Configuration files with secrets
+# ---------------------------
+config.local.*
+.local.
+settings.local.py
+credentials.json
+client_secret.json
+
+# ---------------------------
+# Reports / Exports (if any)
+# ---------------------------
+*.pdf
+*.xlsx
+*.csv
+!sample/*.csv  # if you have sample data to commit
+reports/
+exports/

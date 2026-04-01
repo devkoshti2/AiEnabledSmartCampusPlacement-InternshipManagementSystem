@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skill Gap Analysis | Placement System</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/placement-theme.css">
+    
+    <style>
+        .skill-badge {
+            padding: 8px 15px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            margin: 5px;
+            display: inline-block;
+        }
+        .skill-matched { 
+            background: #D4EDDA; 
+            color: #0A1929;
+            border-left: 4px solid #27AE60;
+        }
+        .skill-missing { 
+            background: #FFEBEE; 
+            color: #EB5757;
+            border-left: 4px solid #EB5757;
+        }
+        .recommendation-card {
+            border-left: 4px solid #F0B90B;
+            transition: all 0.3s;
+            margin-bottom: 10px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+        }
+        .recommendation-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .stats-badge {
+            background: #F3F4F6;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: #4B5563;
+            margin-left: 10px;
+        }
+        .match-perfect {
+            background: #27AE60;
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        .summary-card {
+            background: linear-gradient(135deg, #0A1929, #1A2A3A);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+        .summary-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #F0B90B;
+        }
+        .summary-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="dashboard.html">
+                <i class="fas fa-graduation-cap"></i>
+                Placement System
+            </a>
+            
+            <div class="d-flex align-items-center">
+                <div class="dropdown me-3">
+                    <button class="btn btn-link text-white position-relative p-0" data-bs-toggle="dropdown">
+                        <i class="fas fa-bell fs-5"></i>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-secondary" 
+                              id="notificationBadge" style="display: none;">0</span>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-end" style="width: 320px;" id="notificationList">
+                        <div class="text-center p-3">Loading...</div>
+                    </div>
+                </div>
+                
+                <div class="dropdown">
+                    <button class="btn btn-link text-white text-decoration-none d-flex align-items-center" data-bs-toggle="dropdown">
+                        <span class="me-2 d-none d-md-inline" id="userName">Student</span>
+                        <i class="fas fa-user-circle fs-4"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="dashboard.html">Dashboard</a></li>
+                        <li><a class="dropdown-item" href="profile.html">Profile</a></li>
+                        <li><a class="dropdown-item" href="applications.html">Applications</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="#" onclick="logout()">Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-4">
+        <h2 class="mb-4"><i class="fas fa-chart-line me-2 text-secondary"></i>Skill Gap Analysis</h2>
+        
+        <div class="row">
+            <!-- Drive Selection -->
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <i class="fas fa-briefcase me-2 text-secondary"></i>Select Drive
+                    </div>
+                    <div class="card-body">
+                        <select class="form-control" id="driveSelect" onchange="analyzeSkillGap()">
+                            <option value="">Choose a drive...</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Your Skills -->
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-code me-2 text-secondary"></i>Your Current Skills
+                        <span class="stats-badge" id="yourSkillsCount">0</span>
+                    </div>
+                    <div class="card-body" id="yourSkills">
+                        <div class="text-center">
+                            <div class="spinner-border spinner-border-sm text-secondary"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Analysis Results -->
+            <div class="col-md-8">
+                <div id="analysisResults" style="display: none;">
+                    <!-- Summary Card -->
+                    <div class="summary-card mb-4">
+                        <div class="row">
+                            <div class="col-md-4 text-center">
+                                <div class="summary-value" id="matchPercentage">0%</div>
+                                <div class="summary-label">Skills Match</div>
+                            </div>
+                            <div class="col-md-4 text-center">
+                                <div class="summary-value" id="totalRequired">0</div>
+                                <div class="summary-label">Required Skills</div>
+                            </div>
+                            <div class="col-md-4 text-center">
+                                <div class="summary-value" id="matchedCount">0</div>
+                                <div class="summary-label">Matched / Missing</div>
+                                <small id="missingCount" class="text-warning">0 missing</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Skills Comparison -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card mb-4">
+                                <div class="card-header bg-success text-white">
+                                    <i class="fas fa-check-circle me-2"></i>Matched Skills
+                                    <span class="badge bg-light text-dark float-end" id="matchedCountBadge">0</span>
+                                </div>
+                                <div class="card-body" id="matchedSkills">
+                                    <p class="text-muted">No matches found</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card mb-4">
+                                <div class="card-header bg-danger text-white">
+                                    <i class="fas fa-times-circle me-2"></i>Missing Skills
+                                    <span class="badge bg-light text-dark float-end" id="missingCountBadge">0</span>
+                                </div>
+                                <div class="card-body" id="missingSkills">
+                                    <p class="text-muted">No missing skills</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Recommendations -->
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-graduation-cap me-2 text-secondary"></i>Recommended Courses
+                        </div>
+                        <div class="card-body" id="recommendations"></div>
+                    </div>
+                </div>
+                
+                <div id="noSelection" class="text-center py-5">
+                    <i class="fas fa-search fa-4x text-muted mb-3"></i>
+                    <h5>Select a drive to analyze skill gaps</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        let userProfile = null;
+        let currentAnalysis = null;
+        
+        async function loadUserData() {
+            try {
+                await loadUserInfo();
+                
+                const profileRes = await fetch(`${API_BASE_URL}/student/profile`, {
+                    headers: getAuthHeaders()
+                });
+                if (profileRes.ok) {
+                    userProfile = await profileRes.json();
+                    displayYourSkills();
+                }
+                
+                loadDrives();
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+        
+        function displayYourSkills() {
+            const div = document.getElementById('yourSkills');
+            const countSpan = document.getElementById('yourSkillsCount');
+            
+            if (!userProfile.skills) {
+                div.innerHTML = '<p class="text-muted">No skills added yet</p>';
+                countSpan.textContent = '0';
+                return;
+            }
+            
+            const skills = userProfile.skills.split(',').map(s => s.trim()).filter(s => s);
+            countSpan.textContent = skills.length;
+            
+            let html = '';
+            skills.forEach(skill => {
+                html += `<span class="skill-badge bg-primary text-white">${skill}</span>`;
+            });
+            div.innerHTML = html;
+        }
+        
+        async function loadDrives() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/student/drives`, {
+                    headers: getAuthHeaders()
+                });
+                
+                if (response.ok) {
+                    const drives = await response.json();
+                    const select = document.getElementById('driveSelect');
+                    
+                    // Filter out expired drives for analysis
+                    const activeDrives = drives.filter(d => !d.is_expired);
+                    
+                    activeDrives.forEach(drive => {
+                        select.innerHTML += `<option value="${drive.id}">${drive.company_name} - ${drive.job_title}</option>`;
+                    });
+                    
+                    if (activeDrives.length === 0) {
+                        select.innerHTML += '<option value="" disabled>No active drives available</option>';
+                    }
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+        
+        async function analyzeSkillGap() {
+            const driveId = document.getElementById('driveSelect').value;
+            if (!driveId) {
+                document.getElementById('analysisResults').style.display = 'none';
+                document.getElementById('noSelection').style.display = 'block';
+                return;
+            }
+            
+            document.getElementById('noSelection').style.display = 'none';
+            document.getElementById('analysisResults').style.display = 'block';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/ai/predict-eligibility/${driveId}`, {
+                    headers: getAuthHeaders()
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    currentAnalysis = data.skill_analysis;
+                    displayAnalysis(data);
+                } else {
+                    showNotification('Failed to load analysis', 'danger');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showNotification('Network error', 'danger');
+            }
+        }
+        
+        function displayAnalysis(data) {
+            const analysis = data.skill_analysis;
+            
+            // ===== FIX NaN Issue =====
+            const totalRequired = analysis.total_required || 0;
+            const matchedCount = analysis.matched || 0;
+            const missingCount = analysis.missing_skills?.length || 0;
+            
+            // Calculate match percentage safely
+            let matchPercent = 0;
+            if (totalRequired > 0) {
+                matchPercent = Math.round((matchedCount / totalRequired) * 100);
+            } else if (totalRequired === 0) {
+                matchPercent = 100; // Agar koi skill required nahi to 100%
+            }
+            
+            // Update summary
+            document.getElementById('matchPercentage').textContent = matchPercent + '%';
+            document.getElementById('totalRequired').textContent = totalRequired;
+            document.getElementById('matchedCount').textContent = matchedCount + ' / ' + missingCount;
+            document.getElementById('missingCount').textContent = missingCount + ' missing';
+            
+            // Update badges
+            document.getElementById('matchedCountBadge').textContent = matchedCount;
+            document.getElementById('missingCountBadge').textContent = missingCount;
+            
+            // Matched skills
+            const matchedDiv = document.getElementById('matchedSkills');
+            if (analysis.matched_skills && analysis.matched_skills.length > 0) {
+                matchedDiv.innerHTML = '';
+                analysis.matched_skills.forEach(skill => {
+                    matchedDiv.innerHTML += `<span class="skill-badge skill-matched">${skill}</span>`;
+                });
+            } else {
+                matchedDiv.innerHTML = '<p class="text-muted">No matched skills</p>';
+            }
+            
+            // Missing skills
+            const missingDiv = document.getElementById('missingSkills');
+            if (analysis.missing_skills && analysis.missing_skills.length > 0) {
+                missingDiv.innerHTML = '';
+                analysis.missing_skills.forEach(skill => {
+                    missingDiv.innerHTML += `
+                        <div class="mb-2">
+                            <span class="skill-badge skill-missing">${skill}</span>
+                            <button class="btn btn-sm btn-link" onclick="findCourse('${skill}')">
+                                <i class="fas fa-graduation-cap"></i> Find Course
+                            </button>
+                        </div>
+                    `;
+                });
+            } else {
+                missingDiv.innerHTML = '<div class="match-perfect"><i class="fas fa-check-circle fa-3x mb-2"></i><h5>Perfect Match!</h5><p>You have all the required skills!</p></div>';
+            }
+            
+            // Recommendations
+            const recDiv = document.getElementById('recommendations');
+            if (analysis.recommendations && analysis.recommendations.length > 0) {
+                recDiv.innerHTML = '';
+                analysis.recommendations.forEach(rec => {
+                    recDiv.innerHTML += `
+                        <div class="recommendation-card">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-grow-1">
+                                    <h6>${rec.course}</h6>
+                                    <p class="mb-1"><small class="text-muted">${rec.platform}</small></p>
+                                    <small>Learn <strong>${rec.skill}</strong></small>
+                                </div>
+                                <a href="${rec.url}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-external-link-alt"></i> Start
+                                </a>
+                            </div>
+                        </div>
+                    `;
+                });
+            } else if (analysis.missing_skills && analysis.missing_skills.length > 0) {
+                // Generic recommendations for missing skills
+                recDiv.innerHTML = '';
+                analysis.missing_skills.slice(0, 5).forEach(skill => {
+                    recDiv.innerHTML += `
+                        <div class="recommendation-card">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-grow-1">
+                                    <h6>Learn ${skill}</h6>
+                                    <p class="mb-1"><small class="text-muted">Online Course</small></p>
+                                </div>
+                                <a href="https://www.google.com/search?q=learn+${skill}+online" target="_blank" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-search"></i> Find
+                                </a>
+                            </div>
+                        </div>
+                    `;
+                });
+            } else {
+                recDiv.innerHTML = '<p class="text-muted text-center py-3">No recommendations needed - you have all skills!</p>';
+            }
+        }
+        
+        function findCourse(skill) {
+            window.open(`https://www.google.com/search?q=learn+${encodeURIComponent(skill)}+online`, '_blank');
+        }
+        
+        if (checkAuth()) {
+            loadUserData();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics | Admin</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/placement-theme.css">
+    
+    <style>
+        .sidebar {
+            background: #0A1929;
+            min-height: 100vh;
+            position: fixed;
+            width: 260px;
+            color: white;
+            z-index: 1000;
+            transition: all 0.3s;
+        }
+        .sidebar-header {
+            padding: 30px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .sidebar-header h4 {
+            color: white;
+            margin: 0;
+        }
+        .sidebar-header small {
+            color: #F0B90B;
+        }
+        .sidebar-nav {
+            padding: 20px 0;
+        }
+        .sidebar-nav a {
+            display: block;
+            padding: 12px 25px;
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+        }
+        .sidebar-nav a:hover,
+        .sidebar-nav a.active {
+            background: rgba(240,185,11,0.1);
+            color: #F0B90B;
+            border-left-color: #F0B90B;
+        }
+        .sidebar-nav a i {
+            width: 25px;
+            margin-right: 10px;
+        }
+        .main-content {
+            margin-left: 260px;
+            padding: 30px;
+        }
+        .top-bar {
+            background: white;
+            padding: 15px 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .chart-container {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h4><i class="fas fa-graduation-cap me-2" style="color: #F0B90B;"></i>Admin Panel</h4>
+            <small>Placement System</small>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <a href="dashboard.html"><i class="fas fa-chart-pie"></i> Dashboard</a>
+            <a href="companies.html"><i class="fas fa-building"></i> Companies</a>
+            <a href="drives.html"><i class="fas fa-briefcase"></i> Drives</a>
+            <a href="students.html"><i class="fas fa-users"></i> Students</a>
+            <a href="analytics.html" class="active"><i class="fas fa-chart-line"></i> Analytics</a>
+            <a href="models-dashboard.html"><i class="fas fa-robot"></i> AI Models</a>
+            <a href="export-reports.html"><i class="fas fa-download"></i> Export</a>
+            <a href="#" onclick="adminLogout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <h4 class="fw-bold">Analytics Dashboard</h4>
+            <span class="fw-bold" id="adminName">Admin</span>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="stats-grid mb-4">
+            <div class="stat-card">
+                <div class="stat-value" id="totalDrives">0</div>
+                <div class="stat-label">Total Drives</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="totalApplications">0</div>
+                <div class="stat-label">Applications</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="selectedStudents">0</div>
+                <div class="stat-label">Selected</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="placementRate">0%</div>
+                <div class="stat-label">Placement Rate</div>
+            </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="chart-container">
+                    <h5 class="mb-3"><i class="fas fa-chart-bar me-2 text-secondary"></i>Branch-wise Placement</h5>
+                    <canvas id="branchChart" height="300"></canvas>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="chart-container">
+                    <h5 class="mb-3"><i class="fas fa-chart-pie me-2 text-secondary"></i>Top Demanded Skills</h5>
+                    <canvas id="skillsChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Package Analysis -->
+        <div class="chart-container">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5><i class="fas fa-chart-line me-2 text-secondary"></i>Package Analysis (LPA)</h5>
+                <select class="form-select" id="packageYear" style="width: 120px; padding: 6px 10px; font-size: 14px;">
+                    <option value="2026" selected>📊 2026</option>
+                    <option value="2025">📊 2025</option>
+                </select>
+            </div>
+            <div class="row">
+                <div class="col-md-8">
+                    <canvas id="packageChart" height="300"></canvas>
+                </div>
+                <div class="col-md-4">
+                    <div class="p-3 bg-light rounded">
+                        <h6>Package Statistics</h6>
+                        <table class="table table-sm">
+                            <tr>
+                                <td>Average Package:</td>
+                                <td><strong id="avgPackage">0 LPA</strong></td>
+                            </tr>
+                            <tr>
+                                <td>Highest Package:</td>
+                                <td><strong id="highestPackage">0 LPA</strong></td>
+                            </tr>
+                            <tr>
+                                <td>Lowest Package:</td>
+                                <td><strong id="lowestPackage">0 LPA</strong></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Company Stats -->
+        <div class="chart-container">
+            <h5 class="mb-3"><i class="fas fa-building me-2 text-secondary"></i>Company-wise Hiring</h5>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Company</th>
+                            <th>Drives</th>
+                            <th>Offers</th>
+                            <th>Avg Package</th>
+                        </tr>
+                    </thead>
+                    <tbody id="companyTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/main.js"></script>
+    <script>
+        const token = localStorage.getItem('token');
+        const role = localStorage.getItem('role');
+    
+        if (!token || role !== 'admin') {
+            window.location.href = '../index.html';
+        }
+
+        let packageChart = null;
+        
+        async function loadAnalytics() {
+            try {
+                await loadUserInfo();
+                
+                const response = await fetch(`${API_BASE_URL}/ai/placement-trends`, {
+                    headers: getAuthHeaders()
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    displayAnalytics(data);
+                }
+                
+                loadPackageAnalysis(document.getElementById('packageYear').value);
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+        
+        async function loadPackageAnalysis(year) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/admin/package-analysis?year=${year}`, {
+                    headers: getAuthHeaders()
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    displayPackageChart(data);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+        
+        function displayAnalytics(data) {
+            document.getElementById('totalDrives').textContent = data.total_drives || 0;
+            document.getElementById('totalApplications').textContent = data.total_applications || 0;
+            
+            let selected = 0;
+            if (data.branch_wise_placement) {
+                Object.values(data.branch_wise_placement).forEach(v => selected += v);
+            }
+            document.getElementById('selectedStudents').textContent = selected;
+            
+            const rate = data.total_applications ? ((selected / data.total_applications) * 100).toFixed(1) : 0;
+            document.getElementById('placementRate').textContent = rate + '%';
+            
+            // Branch chart
+            if (data.branch_wise_placement) {
+                new Chart(document.getElementById('branchChart'), {
+                    type: 'bar',
+                    data: {
+                        labels: Object.keys(data.branch_wise_placement),
+                        datasets: [{
+                            label: 'Placement %',
+                            data: Object.values(data.branch_wise_placement),
+                            backgroundColor: '#0A1929'
+                        }]
+                    }
+                });
+            }
+            
+            // Skills chart
+            if (data.top_demand_skills) {
+                new Chart(document.getElementById('skillsChart'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: data.top_demand_skills.map(s => s.skill),
+                        datasets: [{
+                            data: data.top_demand_skills.map(s => s.count),
+                            backgroundColor: ['#0A1929', '#F0B90B', '#27AE60', '#EB5757', '#2D9CDB']
+                        }]
+                    }
+                });
+            }
+        }
+        
+        function displayPackageChart(data) {
+            document.getElementById('avgPackage').textContent = data.average_package + ' LPA';
+            document.getElementById('highestPackage').textContent = data.highest_package + ' LPA';
+            document.getElementById('lowestPackage').textContent = data.lowest_package + ' LPA';
+            
+            const ctx = document.getElementById('packageChart').getContext('2d');
+            
+            if (packageChart) packageChart.destroy();
+            
+            packageChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.companies.map(c => c.name),
+                    datasets: [{
+                        label: 'Average Package (LPA)',
+                        data: data.companies.map(c => c.avg_package),
+                        backgroundColor: '#0A1929'
+                    }]
+                }
+            });
+            
+            let tableHtml = '';
+            data.companies.forEach(c => {
+                tableHtml += `
+                    <tr>
+                        <td><strong>${c.name}</strong></td>
+                        <td>${c.drives}</td>
+                        <td>${c.offers}</td>
+                        <td>${c.avg_package} LPA</td>
+                    </tr>
+                `;
+            });
+            document.getElementById('companyTableBody').innerHTML = tableHtml;
+        }
+        
+        document.getElementById('packageYear').addEventListener('change', function(e) {
+            loadPackageAnalysis(e.target.value);
+        });
+        
+        if (checkAuth()) {
+            loadAnalytics();
+        }
+    </script>
+</body>
+</html>

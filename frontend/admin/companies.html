@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Companies | Admin</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/placement-theme.css">
+    
+    <style>
+        .sidebar {
+            background: #0A1929;
+            min-height: 100vh;
+            position: fixed;
+            width: 260px;
+            color: white;
+            z-index: 1000;
+            transition: all 0.3s;
+        }
+        .sidebar-header {
+            padding: 30px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .sidebar-header h4 {
+            color: white;
+            margin: 0;
+        }
+        .sidebar-header small {
+            color: #F0B90B;
+        }
+        .sidebar-nav {
+            padding: 20px 0;
+        }
+        .sidebar-nav a {
+            display: block;
+            padding: 12px 25px;
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+        }
+        .sidebar-nav a:hover,
+        .sidebar-nav a.active {
+            background: rgba(240,185,11,0.1);
+            color: #F0B90B;
+            border-left-color: #F0B90B;
+        }
+        .sidebar-nav a i {
+            width: 25px;
+            margin-right: 10px;
+        }
+        .main-content {
+            margin-left: 260px;
+            padding: 30px;
+        }
+        .top-bar {
+            background: white;
+            padding: 15px 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .company-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            height: 100%;
+            border: 1px solid #E5E7EB;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        .company-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border-color: #F0B90B;
+        }
+        .company-logo {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #0A1929, #F0B90B);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        .company-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #0A1929;
+            margin-bottom: 5px;
+        }
+        .company-industry {
+            color: #F0B90B;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+        .company-description {
+            color: #6B7280;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        .company-website {
+            font-size: 0.85rem;
+            color: #0A1929;
+            text-decoration: none;
+        }
+        .company-website:hover {
+            color: #F0B90B;
+        }
+        .stats-badge {
+            background: #F3F4F6;
+            padding: 5px 10px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            color: #4B5563;
+        }
+        .action-btn {
+            width: 35px;
+            height: 35px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 3px;
+            transition: all 0.2s;
+        }
+        .action-btn:hover {
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h4><i class="fas fa-graduation-cap me-2" style="color: #F0B90B;"></i>Admin Panel</h4>
+            <small>Placement System</small>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <a href="dashboard.html"><i class="fas fa-chart-pie"></i> Dashboard</a>
+            <a href="companies.html" class="active"><i class="fas fa-building"></i> Companies</a>
+            <a href="drives.html"><i class="fas fa-briefcase"></i> Drives</a>
+            <a href="students.html"><i class="fas fa-users"></i> Students</a>
+            <a href="analytics.html"><i class="fas fa-chart-line"></i> Analytics</a>
+            <a href="models-dashboard.html"><i class="fas fa-robot"></i> AI Models</a>
+            <a href="export-reports.html"><i class="fas fa-download"></i> Export</a>
+            <a href="#" onclick="adminLogout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <h4 class="fw-bold mb-0">
+                <i class="fas fa-building me-2 text-secondary"></i>
+                Companies Management
+            </h4>
+            <div class="d-flex align-items-center">
+                <span class="fw-bold" id="adminName">Admin</span>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="stat-card p-3">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon me-3" style="width: 50px; height: 50px;">
+                            <i class="fas fa-building"></i>
+                        </div>
+                        <div>
+                            <div class="stat-value h3 mb-0" id="totalCompanies">0</div>
+                            <div class="stat-label">Total Companies</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card p-3">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon me-3" style="width: 50px; height: 50px;">
+                            <i class="fas fa-briefcase"></i>
+                        </div>
+                        <div>
+                            <div class="stat-value h3 mb-0" id="totalDrives">0</div>
+                            <div class="stat-label">Total Drives</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card p-3">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon me-3" style="width: 50px; height: 50px;">
+                            <i class="fas fa-play-circle"></i>
+                        </div>
+                        <div>
+                            <div class="stat-value h3 mb-0" id="activeDrives">0</div>
+                            <div class="stat-label">Active Drives</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card p-3">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon me-3" style="width: 50px; height: 50px;">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <div>
+                            <div class="stat-value h3 mb-0" id="totalApplications">0</div>
+                            <div class="stat-label">Applications</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search and Add -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="d-flex gap-2 flex-grow-1 me-3">
+                <input type="text" class="form-control" id="searchCompany" placeholder="Search companies...">
+                <select class="form-control w-auto" id="filterIndustry">
+                    <option value="">All Industries</option>
+                    <option value="Technology">Technology</option>
+                    <option value="Finance">Finance</option>
+                    <option value="Consulting">Consulting</option>
+                    <option value="Manufacturing">Manufacturing</option>
+                    <option value="Healthcare">Healthcare</option>
+                </select>
+            </div>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCompanyModal">
+                <i class="fas fa-plus me-2"></i>Add Company
+            </button>
+        </div>
+
+        <!-- Companies List -->
+        <div class="row" id="companiesList">
+            <div class="col-12 text-center">
+                <div class="spinner-border text-secondary"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Company Modal -->
+    <div class="modal fade" id="addCompanyModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New Company</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="addMessage"></div>
+                    <form id="addCompanyForm">
+                        <div class="mb-3">
+                            <label class="form-label">Company Name *</label>
+                            <input type="text" class="form-control" id="addName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Industry</label>
+                            <input type="text" class="form-control" id="addIndustry">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Website</label>
+                            <input type="url" class="form-control" id="addWebsite">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Description</label>
+                            <textarea class="form-control" id="addDescription" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="addCompany()">Add Company</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Company Modal -->
+    <div class="modal fade" id="editCompanyModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Company</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="editMessage"></div>
+                    <input type="hidden" id="editCompanyId">
+                    <div class="mb-3">
+                        <label class="form-label">Company Name *</label>
+                        <input type="text" class="form-control" id="editName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Industry</label>
+                        <input type="text" class="form-control" id="editIndustry">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Website</label>
+                        <input type="url" class="form-control" id="editWebsite">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-control" id="editDescription" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="updateCompany()">Update Company</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteCompanyModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-danger">Delete Company</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete <strong id="deleteCompanyName"></strong>?</p>
+                    <p class="text-danger">This action cannot be undone and will delete all associated drives!</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" onclick="confirmDelete()">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Company Modal -->
+    <div class="modal fade" id="viewCompanyModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Company Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center mb-4">
+                        <div class="company-logo mx-auto" style="width: 80px; height: 80px; font-size: 2rem;" id="viewLogo">C</div>
+                        <h4 class="mt-3" id="viewName"></h4>
+                        <p class="text-muted" id="viewIndustry"></p>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Website:</strong> <a href="#" id="viewWebsite" target="_blank"></a></p>
+                            <p><strong>Total Drives:</strong> <span id="viewDrives">0</span></p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Total Applications:</strong> <span id="viewApplications">0</span></p>
+                            <p><strong>Created:</strong> <span id="viewCreated"></span></p>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-3">
+                        <h6>Description:</h6>
+                        <p id="viewDescription"></p>
+                    </div>
+                    
+                    <div class="mt-3">
+                        <h6>Recent Drives:</h6>
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Job Title</th>
+                                        <th>Status</th>
+                                        <th>Last Date</th>
+                                        <th>Applications</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="viewDrivesList">
+                                    <tr><td colspan="4" class="text-center">Loading...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="editFromView()">Edit Company</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/main.js"></script>
+    <script>
+        const token = localStorage.getItem('token');
+        const role = localStorage.getItem('role');
+        let allCompanies = [];
+        let deleteId = null;
+        
+        if (!token || role !== 'admin') {
+            window.location.href = '../index.html';
+        }
+        
+        async function loadCompanies() {
+            try {
+                await loadAdminInfo();
+                
+                const response = await fetch(`${API_BASE_URL}/admin/companies`, {
+                    headers: getAuthHeaders()
+                });
+                
+                if (response.ok) {
+                    allCompanies = await response.json();
+                    document.getElementById('totalCompanies').textContent = allCompanies.length;
+                    
+                    // Load drive counts
+                    await loadCompanyDrives();
+                    
+                    // Rest of stats
+                    const drivesRes = await fetch(`${API_BASE_URL}/admin/drives/stats/overview`, {
+                        headers: getAuthHeaders()
+                    });
+                    
+                    if (drivesRes.ok) {
+                        const stats = await drivesRes.json();
+                        document.getElementById('totalDrives').textContent = stats.total_drives || 0;
+                        document.getElementById('activeDrives').textContent = stats.active_drives || 0;
+                    }
+                    
+                    const appsRes = await fetch(`${API_BASE_URL}/admin/dashboard`, {
+                        headers: getAuthHeaders()
+                    });
+                    
+                    if (appsRes.ok) {
+                        const stats = await appsRes.json();
+                        document.getElementById('totalApplications').textContent = stats.total_applications || 0;
+                    }
+                } else {
+                    document.getElementById('companiesList').innerHTML = 
+                        '<div class="col-12"><p class="text-danger text-center">Failed to load companies</p></div>';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('companiesList').innerHTML = 
+                    '<div class="col-12"><p class="text-danger text-center">Network error</p></div>';
+            }
+        }
+        
+        async function loadCompanyDrives() {
+            try {
+                // Fetch all drives
+                const drivesRes = await fetch(`${API_BASE_URL}/admin/drives/upcoming?limit=100`, {
+                    headers: getAuthHeaders()
+                });
+                
+                if (drivesRes.ok) {
+                    const allDrives = await drivesRes.json();
+                    
+                    // Count drives per company
+                    const driveCounts = {};
+                    allDrives.forEach(drive => {
+                        const companyId = drive.company_id;
+                        if (companyId) {
+                            driveCounts[companyId] = (driveCounts[companyId] || 0) + 1;
+                        }
+                    });
+                    
+                    // Update allCompanies with drive counts
+                    allCompanies = allCompanies.map(company => ({
+                        ...company,
+                        drive_count: driveCounts[company.id] || 0
+                    }));
+                    
+                    // Redisplay with updated counts
+                    displayCompanies(allCompanies);
+                }
+            } catch (error) {
+                console.error('Error loading drive counts:', error);
+            }
+        }
+        
+        function displayCompanies(companies) {
+            const listDiv = document.getElementById('companiesList');
+            
+            if (companies.length === 0) {
+                listDiv.innerHTML = '<div class="col-12"><p class="text-muted text-center">No companies found</p></div>';
+                return;
+            }
+            
+            let html = '';
+            companies.forEach(company => {
+                const logo = company.name?.charAt(0).toUpperCase() || 'C';
+                const driveCount = company.drive_count || 0;
+                
+                html += `
+                    <div class="col-md-4 mb-4">
+                        <div class="company-card">
+                            <div class="d-flex justify-content-between">
+                                <div class="company-logo">${logo}</div>
+                                <div>
+                                    <button class="btn btn-sm action-btn btn-outline-info" onclick="viewCompany(${company.id})">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="btn btn-sm action-btn btn-outline-primary" onclick="editCompany(${company.id})">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm action-btn btn-outline-danger" onclick="deleteCompany(${company.id}, '${company.name}')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="company-name">${company.name}</div>
+                            <div class="company-industry">${company.industry || 'Not specified'}</div>
+                            <div class="company-description">${company.description || 'No description available'}</div>
+                            
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="stats-badge">
+                                    <i class="fas fa-briefcase me-1"></i>${driveCount} ${driveCount === 1 ? 'Drive' : 'Drives'}
+                                </div>
+                                ${company.website ? 
+                                    `<a href="${company.website}" target="_blank" class="company-website">
+                                        <i class="fas fa-external-link-alt me-1"></i>Website
+                                    </a>` : ''
+                                }
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            listDiv.innerHTML = html;
+        }
+        
+        function filterCompanies() {
+            const search = document.getElementById('searchCompany').value.toLowerCase();
+            const industry = document.getElementById('filterIndustry').value;
+            
+            let filtered = allCompanies;
+            
+            if (search) {
+                filtered = filtered.filter(c => 
+                    c.name?.toLowerCase().includes(search) ||
+                    c.industry?.toLowerCase().includes(search)
+                );
+            }
+            
+            if (industry) {
+                filtered = filtered.filter(c => c.industry === industry);
+            }
+            
+            displayCompanies(filtered);
+        }
+        
+        async function addCompany() {
+            const companyData = {
+                name: document.getElementById('addName').value,
+                industry: document.getElementById('addIndustry').value,
+                website: document.getElementById('addWebsite').value,
+                description: document.getElementById('addDescription').value
+            };
+            
+            if (!companyData.name) {
+                showNotification('Company name is required', 'warning');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/admin/companies`, {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify(companyData)
+                });
+                
+                if (response.ok) {
+                    bootstrap.Modal.getInstance(document.getElementById('addCompanyModal')).hide();
+                    document.getElementById('addCompanyForm').reset();
+                    await loadCompanies();
+                    showNotification('Company added successfully!', 'success');
+                } else {
+                    const error = await response.json();
+                    showNotification('Error: ' + error.detail, 'danger');
+                }
+            } catch (error) {
+                showNotification('Network error', 'danger');
+            }
+        }
+        
+        async function viewCompany(id) {
+            const company = allCompanies.find(c => c.id === id);
+            if (!company) return;
+            
+            document.getElementById('viewLogo').textContent = company.name?.charAt(0).toUpperCase() || 'C';
+            document.getElementById('viewName').textContent = company.name || '';
+            document.getElementById('viewIndustry').textContent = company.industry || 'Not specified';
+            document.getElementById('viewWebsite').textContent = company.website || '';
+            document.getElementById('viewWebsite').href = company.website || '#';
+            document.getElementById('viewDescription').textContent = company.description || 'No description available';
+            document.getElementById('viewCreated').textContent = company.created_at ? 
+                new Date(company.created_at).toLocaleDateString() : 'N/A';
+            
+            // Load company drives
+            try {
+                const drivesRes = await fetch(`${API_BASE_URL}/admin/companies/${id}/drives`, {
+                    headers: getAuthHeaders()
+                });
+                
+                if (drivesRes.ok) {
+                    const drives = await drivesRes.json();
+                    document.getElementById('viewDrives').textContent = drives.length;
+                    
+                    let totalApps = 0;
+                    let drivesHtml = '';
+                    
+                    drives.forEach(drive => {
+                        totalApps += drive.applications_count || 0;
+                        drivesHtml += `
+                            <tr>
+                                <td>${drive.job_title}</td>
+                                <td><span class="badge badge-${drive.status}">${drive.status}</span></td>
+                                <td>${new Date(drive.last_date).toLocaleDateString()}</td>
+                                <td>${drive.applications_count || 0}</td>
+                            </tr>
+                        `;
+                    });
+                    
+                    document.getElementById('viewApplications').textContent = totalApps;
+                    document.getElementById('viewDrivesList').innerHTML = drivesHtml || 
+                        '<tr><td colspan="4" class="text-center">No drives found</td></tr>';
+                }
+            } catch (error) {
+                console.error('Error loading drives:', error);
+            }
+            
+            new bootstrap.Modal(document.getElementById('viewCompanyModal')).show();
+        }
+        
+        function editCompany(id) {
+            const company = allCompanies.find(c => c.id === id);
+            if (!company) return;
+            
+            document.getElementById('editCompanyId').value = company.id;
+            document.getElementById('editName').value = company.name || '';
+            document.getElementById('editIndustry').value = company.industry || '';
+            document.getElementById('editWebsite').value = company.website || '';
+            document.getElementById('editDescription').value = company.description || '';
+            
+            new bootstrap.Modal(document.getElementById('editCompanyModal')).show();
+        }
+        
+        function editFromView() {
+            bootstrap.Modal.getInstance(document.getElementById('viewCompanyModal')).hide();
+            setTimeout(() => {
+                editCompany(parseInt(document.getElementById('editCompanyId').value));
+            }, 500);
+        }
+        
+        async function updateCompany() {
+            const companyId = document.getElementById('editCompanyId').value;
+            const companyData = {
+                name: document.getElementById('editName').value,
+                industry: document.getElementById('editIndustry').value,
+                website: document.getElementById('editWebsite').value,
+                description: document.getElementById('editDescription').value
+            };
+            
+            if (!companyData.name) {
+                showNotification('Company name is required', 'warning');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/admin/companies/${companyId}`, {
+                    method: 'PUT',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify(companyData)
+                });
+                
+                if (response.ok) {
+                    bootstrap.Modal.getInstance(document.getElementById('editCompanyModal')).hide();
+                    await loadCompanies();
+                    showNotification('Company updated successfully!', 'success');
+                } else {
+                    const error = await response.json();
+                    showNotification('Error: ' + error.detail, 'danger');
+                }
+            } catch (error) {
+                showNotification('Network error', 'danger');
+            }
+        }
+        
+        function deleteCompany(id, name) {
+            deleteId = id;
+            document.getElementById('deleteCompanyName').textContent = name;
+            new bootstrap.Modal(document.getElementById('deleteCompanyModal')).show();
+        }
+        
+        async function confirmDelete() {
+            if (!deleteId) return;
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/admin/companies/${deleteId}`, {
+                    method: 'DELETE',
+                    headers: getAuthHeaders()
+                });
+                
+                if (response.ok) {
+                    bootstrap.Modal.getInstance(document.getElementById('deleteCompanyModal')).hide();
+                    await loadCompanies();
+                    showNotification('Company deleted successfully!', 'success');
+                } else {
+                    const error = await response.json();
+                    showNotification('Error: ' + error.detail, 'danger');
+                }
+            } catch (error) {
+                showNotification('Network error', 'danger');
+            } finally {
+                deleteId = null;
+            }
+        }
+        
+        // Real-time search
+        document.getElementById('searchCompany').addEventListener('keyup', filterCompanies);
+        document.getElementById('filterIndustry').addEventListener('change', filterCompanies);
+        
+        loadCompanies();
+    </script>
+</body>
+</html>

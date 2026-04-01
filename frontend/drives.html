@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Placement Drives | Placement System</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/placement-theme.css">
+    
+    <style>
+        .filter-section {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .professional-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            border: 1px solid #E5E7EB;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+    
+        .professional-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+            border-color: #F0B90B;
+        }
+    
+        .company-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+    
+        .company-logo-large {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #0A1929, #1A2A3A);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #F0B90B;
+            font-size: 24px;
+            font-weight: 600;
+            margin-right: 16px;
+        }
+    
+        .company-info h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #0A1929;
+            margin: 0 0 4px 0;
+        }
+    
+        .company-info p {
+            color: #6B7280;
+            font-size: 14px;
+            margin: 0;
+        }
+    
+        .job-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 16px 0;
+        }
+    
+        .badge-cgpa {
+            background: #EFF6FF;
+            color: #1E40AF;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+    
+        .badge-deadline {
+            background: #FEF3C7;
+            color: #92400E;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+    
+        .badge-match {
+            background: #D1FAE5;
+            color: #065F46;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+    
+        .badge-match-low {
+            background: #FEE2E2;
+            color: #991B1B;
+        }
+    
+        .skills-section {
+            margin: 16px 0;
+        }
+    
+        .skills-title {
+            font-size: 14px;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+    
+        .skill-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+    
+        .skill-pill {
+            background: #F3F4F6;
+            color: #1F2937;
+            padding: 4px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+    
+        .skill-pill.matched {
+            background: #D1FAE5;
+            color: #065F46;
+            border-left: 2px solid #10B981;
+        }
+    
+        .skill-pill.missing {
+            background: #FEE2E2;
+            color: #991B1B;
+            border-left: 2px solid #EF4444;
+        }
+    
+        .match-meter {
+            background: #F3F4F6;
+            height: 8px;
+            border-radius: 4px;
+            margin: 16px 0;
+            overflow: hidden;
+        }
+    
+        .match-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #F0B90B, #F59E0B);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+    
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid #E5E7EB;
+        }
+    
+        .btn-apply-professional {
+            background: #0A1929;
+            color: white;
+            padding: 10px 24px;
+            border-radius: 30px;
+            font-weight: 500;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+    
+        .btn-apply-professional:hover {
+            background: #F0B90B;
+            color: #0A1929;
+            transform: scale(1.05);
+        }
+    
+        .btn-view-details {
+            background: transparent;
+            color: #6B7280;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-weight: 500;
+            font-size: 14px;
+            border: 1px solid #E5E7EB;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+    
+        .btn-view-details:hover {
+            background: #F3F4F6;
+            color: #0A1929;
+        }
+    
+        .eligibility-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+    
+        .status-eligible-badge {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+    
+        .status-noteligible-badge {
+            background: #FEE2E2;
+            color: #991B1B;
+        }
+    
+        .status-applied-badge {
+            background: #E0E7FF;
+            color: #3730A3;
+        }
+        .eligibility-badge {
+            background: #E8F5E9;
+            color: #27AE60;
+            padding: 5px 12px;
+            border-radius: 30px;
+            font-size: 0.85rem;
+        }
+        .deadline-badge {
+            background: #FFF3E0;
+            color: #F2994A;
+            padding: 5px 12px;
+            border-radius: 30px;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="dashboard.html">
+                <i class="fas fa-graduation-cap"></i>
+                Placement System
+            </a>
+            
+            <div class="d-flex align-items-center">
+                <div class="dropdown me-3">
+                    <button class="btn btn-link text-white position-relative p-0" data-bs-toggle="dropdown">
+                        <i class="fas fa-bell fs-5"></i>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-secondary" 
+                              id="notificationBadge" style="display: none;">0</span>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-end" style="width: 320px;" id="notificationList">
+                        <div class="text-center p-3">Loading...</div>
+                    </div>
+                </div>
+                
+                <div class="dropdown">
+                    <button class="btn btn-link text-white text-decoration-none d-flex align-items-center" data-bs-toggle="dropdown">
+                        <span class="me-2 d-none d-md-inline" id="userName">Student</span>
+                        <i class="fas fa-user-circle fs-4"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="dashboard.html">Dashboard</a></li>
+                        <li><a class="dropdown-item" href="profile.html">Profile</a></li>
+                        <li><a class="dropdown-item" href="applications.html">Applications</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="#" onclick="logout()">Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-4">
+        <h2 class="mb-4"><i class="fas fa-briefcase me-2 text-secondary"></i>Active Placement Drives</h2>
+        
+        <!-- Filters -->
+        <div class="filter-section">
+            <div class="row">
+                <div class="col-md-4">
+                    <input type="text" class="form-control" id="searchCompany" placeholder="Search company...">
+                </div>
+                <div class="col-md-3">
+                    <select class="form-control" id="filterBranch">
+                        <option value="">All Branches</option>
+                        <option value="CSE">CSE</option>
+                        <option value="IT">IT</option>
+                        <option value="ECE">ECE</option>
+                        <option value="EEE">EEE</option>
+                        <option value="MECH">MECH</option>
+                        <option value="CIVIL">CIVIL</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <input type="number" class="form-control" id="minCgpa" placeholder="Min CGPA" step="0.1">
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-primary w-100" onclick="filterDrives()">Filter</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Drives List -->
+        <div id="drivesList">
+            <div class="text-center py-4">
+                <div class="spinner-border text-secondary"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        let allDrives = [];
+    
+        async function loadDrives() {
+            try {
+                await loadUserInfo();
+            
+            // Get drives with eligibility from backend
+                const response = await fetch(`${API_BASE_URL}/student/drives`, {
+                    headers: getAuthHeaders()
+                });
+            
+                if (response.ok) {
+                    allDrives = await response.json();
+                    console.log("Drives from backend:", allDrives);
+                    displayDrives(allDrives);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('drivesList').innerHTML = 
+                    '<div class="alert alert-danger">Failed to load drives</div>';
+            }
+        }
+    
+        function displayDrives(drives) {
+            const drivesList = document.getElementById('drivesList');
+
+            if (drives.length === 0) {
+                drivesList.innerHTML = '<div class="alert alert-info">No drives found</div>';
+                return;
+            }
+
+            let html = '<div class="row">';
+
+            drives.forEach(drive => {
+                const applied = drive.applied || false;
+                const isEligible = drive.is_eligible;
+                const matchPercent = drive.skill_match_percent || 0;
+                const requiredSkills = drive.required_skills_list || [];
+                const matchedSkills = drive.matched_skills || [];
+                const missingSkills = drive.missing_skills || [];
+        
+        // ===== CRITICAL: Check if drive is expired =====
+                const isExpired = drive.is_expired === true;
+                const expiryMessage = drive.expired_message || 'This drive has expired';
+        
+        // Format date properly
+                let formattedDate = 'N/A';
+                if (drive.last_date) {
+                    const date = new Date(drive.last_date);
+                    formattedDate = date.toLocaleDateString('en-US', { 
+                        month: 'short', 
+                        day: 'numeric', 
+                        year: 'numeric' 
+                    });
+                }
+
+        // Determine status badge based on expiry and application status
+                let statusBadge = '';
+                if (applied) {
+                    statusBadge = '<span class="eligibility-status status-applied-badge"><i class="fas fa-check-circle"></i> Applied</span>';
+                } else if (isExpired) {
+                    statusBadge = '<span class="eligibility-status status-noteligible-badge"><i class="fas fa-clock"></i> EXPIRED</span>';
+                } else if (isEligible) {
+                    statusBadge = '<span class="eligibility-status status-eligible-badge"><i class="fas fa-check-circle"></i> Eligible</span>';
+                } else {
+                    statusBadge = '<span class="eligibility-status status-noteligible-badge"><i class="fas fa-times-circle"></i> Not Eligible</span>';
+                }
+
+        // Create skill pills
+                let skillPills = '';
+                requiredSkills.slice(0, 5).forEach(skill => {
+                    const isMatched = matchedSkills.includes(skill);
+                    const skillClass = isMatched ? 'skill-pill matched' : 'skill-pill missing';
+                    skillPills += `<span class="${skillClass}" title="${isMatched ? 'You have this skill' : 'Missing skill'}">${skill}</span>`;
+                });
+                if (requiredSkills.length > 5) {
+                    skillPills += `<span class="skill-pill">+${requiredSkills.length - 5} more</span>`;
+                }
+
+        // Determine deadline badge class
+                const deadlineClass = isExpired ? 'badge-deadline bg-danger text-white' : 'badge-deadline';
+
+                html += `
+                    <div class="col-12 mb-3">
+                        <div class="professional-card ${isExpired ? 'expired-card' : ''}">
+                            <div class="company-header">
+                                <div class="company-logo-large">
+                                    ${drive.company_name?.charAt(0) || 'C'}
+                                </div>
+                                <div class="company-info">
+                                    <h3>${drive.job_title || 'Job Title'}</h3>
+                                    <p>${drive.company_name || 'Company'} • ${drive.location || 'Location not specified'}</p>
+                                </div>
+                                <div style="margin-left: auto;">
+                                    ${statusBadge}
+                                </div>
+                            </div>
+                            
+                            <div class="job-badges">
+                                <span class="badge-cgpa">
+                                    <i class="fas fa-star me-1"></i>CGPA: ${drive.eligibility_cgpa || '0'}+
+                                </span>
+                                <span class="${deadlineClass}">
+                                    <i class="far fa-calendar me-1"></i>${formattedDate}
+                                    ${isExpired ? ' <strong>(EXPIRED)</strong>' : ''}
+                                </span>
+                                ${!isExpired ? `
+                                    <span class="badge-match ${matchPercent >= 70 ? '' : 'badge-match-low'}">
+                                        <i class="fas fa-chart-line me-1"></i>${matchPercent}% Match
+                                    </span>
+                                ` : ''}
+                            </div>
+
+                            ${!isExpired ? `
+                                <div class="match-meter">
+                                    <div class="match-fill" style="width: ${matchPercent}%;"></div>
+                                </div>
+                            ` : ''}
+                                
+                            <div class="skills-section">
+                                <div class="skills-title">
+                                    <i class="fas fa-code me-2"></i>Required Skills
+                                </div>
+                                <div class="skill-pills">
+                                    ${skillPills}
+                                </div>
+                            </div>
+            
+                            ${missingSkills.length > 0 && !isEligible && !isExpired ? `
+                                <div class="alert alert-warning py-2 px-3 mb-0" style="font-size: 13px;">
+                                    <i class="fas fa-lightbulb me-2"></i>
+                                    <strong>Skills to improve:</strong> ${missingSkills.slice(0, 3).join(', ')}${missingSkills.length > 3 ? '...' : ''}
+                                </div>
+                            ` : ''}
+                    
+                            ${isExpired ? `
+                                <div class="alert alert-danger py-2 px-3 mb-0" style="font-size: 13px;">
+                                    <i class="fas fa-exclamation-circle me-2"></i>
+                                    <strong>${expiryMessage}</strong>
+                                </div>
+                            ` : ''}
+            
+                            <div class="card-footer">
+                                <div>
+                                    <i class="fas fa-briefcase me-1 text-muted"></i>
+                                    <span class="text-muted">${drive.job_type || 'Full-time'}</span>
+                                </div>
+                                <div>
+                                    <button class="btn-view-details me-2" onclick="viewDetails(${drive.id})">
+                                        <i class="fas fa-info-circle me-1"></i>View Details
+                                    </button>
+                                    ${!applied && !isExpired && isEligible ? 
+                                        `<button class="btn-apply-professional" onclick="applyForDrive(${drive.id})">
+                                            <i class="fas fa-paper-plane me-1"></i>Apply Now
+                                        </button>` : ''
+                                    }
+                                    ${!applied && isExpired ? 
+                                        `<button class="btn btn-secondary" disabled style="opacity: 0.5; cursor: not-allowed; background: #6c757d; color: white; padding: 10px 24px; border-radius: 30px; border: none;">
+                                            <i class="fas fa-ban me-1"></i>Expired
+                                        </button>` : ''
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += '</div>';
+            drivesList.innerHTML = html;
+        }
+    
+        async function applyForDrive(driveId) {
+            const drive = allDrives.find(d => d.id === driveId);
+
+    // ===== CRITICAL: Check if drive is expired =====
+            if (drive && drive.is_expired === true) {
+                showNotification('⛔ This drive has expired. You cannot apply for expired drives.', 'danger');
+                return;
+            }
+
+    // Double-check using backend's eligibility
+            if (!drive || drive.is_eligible !== true) {
+                showNotification('You are not eligible for this drive. Please check the eligibility criteria.', 'warning');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/student/apply/${driveId}`, {
+                    method: 'POST',
+                    headers: getAuthHeaders()
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showNotification('Applied successfully!', 'success');
+                    loadDrives(); // Reload to update button
+                } else {
+                    showNotification('Error: ' + (data.detail || 'Application failed'), 'danger');
+                }
+            } catch (error) {
+                showNotification('Network error', 'danger');
+            }
+        }
+    
+        function filterDrives() {
+            const search = document.getElementById('searchCompany').value.toLowerCase();
+            const minCgpa = parseFloat(document.getElementById('minCgpa').value);
+        
+            let filtered = allDrives;
+        
+            if (search) {
+                filtered = filtered.filter(d => 
+                    d.company_name?.toLowerCase().includes(search) ||
+                    d.job_title?.toLowerCase().includes(search)
+                );
+            }
+        
+            if (minCgpa) {
+                filtered = filtered.filter(d => d.eligibility_cgpa >= minCgpa);
+            }
+        
+            displayDrives(filtered);
+        }
+    
+        function viewDetails(driveId) {
+            window.location.href = `drive-details.html?id=${driveId}`;
+        }
+    
+        if (checkAuth()) {
+            loadDrives();
+        }
+    </script>
+</body>
+</html>

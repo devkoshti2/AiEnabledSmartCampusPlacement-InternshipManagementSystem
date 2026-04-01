@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Export Reports | Admin</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/placement-theme.css">
+    
+    <style>
+        .sidebar {
+            background: #0A1929;
+            min-height: 100vh;
+            position: fixed;
+            width: 260px;
+            color: white;
+            z-index: 1000;
+        }
+        .sidebar-header {
+            padding: 30px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .sidebar-header h4 {
+            color: white;
+            margin: 0;
+        }
+        .sidebar-header small {
+            color: #F0B90B;
+        }
+        .sidebar-nav {
+            padding: 20px 0;
+        }
+        .sidebar-nav a {
+            display: block;
+            padding: 12px 25px;
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+        }
+        .sidebar-nav a:hover,
+        .sidebar-nav a.active {
+            background: rgba(240,185,11,0.1);
+            color: #F0B90B;
+            border-left-color: #F0B90B;
+        }
+        .sidebar-nav a i {
+            width: 25px;
+            margin-right: 10px;
+        }
+        .main-content {
+            margin-left: 260px;
+            padding: 30px;
+        }
+        .top-bar {
+            background: white;
+            padding: 15px 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .export-card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            height: 100%;
+            border: 1px solid #E0E0E0;
+            transition: all 0.3s;
+        }
+        .export-card:hover {
+            border-color: #F0B90B;
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .export-icon {
+            font-size: 3rem;
+            color: #F0B90B;
+            margin-bottom: 15px;
+        }
+        .btn-export-csv {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+        }
+        .btn-export-csv:hover {
+            background: #218838;
+        }
+        .btn-export-pdf {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+        }
+        .btn-export-pdf:hover {
+            background: #c82333;
+        }
+        .btn-export {
+            background: #0A1929;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+        }
+        .btn-export:hover {
+            background: #F0B90B;
+            color: #0A1929;
+        }
+        .spinner-sm {
+            width: 1rem;
+            height: 1rem;
+            border-width: 0.15em;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h4><i class="fas fa-graduation-cap me-2" style="color: #F0B90B;"></i>Admin Panel</h4>
+            <small>Placement System</small>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <a href="dashboard.html"><i class="fas fa-chart-pie"></i> Dashboard</a>
+            <a href="companies.html"><i class="fas fa-building"></i> Companies</a>
+            <a href="drives.html"><i class="fas fa-briefcase"></i> Drives</a>
+            <a href="students.html"><i class="fas fa-users"></i> Students</a>
+            <a href="analytics.html"><i class="fas fa-chart-line"></i> Analytics</a>
+            <a href="models-dashboard.html"><i class="fas fa-robot"></i> AI Models</a>
+            <a href="export-reports.html" class="active"><i class="fas fa-download"></i> Export</a>
+            <a href="#" onclick="adminLogout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="top-bar">
+            <h4 class="fw-bold">Export Reports</h4>
+            <span class="fw-bold" id="adminName">Admin</span>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="export-card">
+                    <div class="export-icon"><i class="fas fa-users"></i></div>
+                    <h5>Student Report</h5>
+                    <p class="text-muted small">Export all students with their profiles</p>
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-export-csv" onclick="exportCSV('students')"><i class="fas fa-file-csv me-2"></i>Export CSV</button>
+                        <button class="btn btn-export-pdf" onclick="exportPDF('students')"><i class="fas fa-file-pdf me-2"></i>Export PDF</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="export-card">
+                    <div class="export-icon"><i class="fas fa-briefcase"></i></div>
+                    <h5>Drives Report</h5>
+                    <p class="text-muted small">Export all placement drives</p>
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-export-csv" onclick="exportCSV('drives')"><i class="fas fa-file-csv me-2"></i>Export CSV</button>
+                        <button class="btn btn-export-pdf" onclick="exportPDF('drives')"><i class="fas fa-file-pdf me-2"></i>Export PDF</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="export-card">
+                    <div class="export-icon"><i class="fas fa-file-alt"></i></div>
+                    <h5>Applications Report</h5>
+                    <p class="text-muted small">Export all applications</p>
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-export-csv" onclick="exportCSV('applications')"><i class="fas fa-file-csv me-2"></i>Export CSV</button>
+                        <button class="btn btn-export-pdf" onclick="exportPDF('applications')"><i class="fas fa-file-pdf me-2"></i>Export PDF</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="export-card">
+                    <div class="export-icon"><i class="fas fa-building"></i></div>
+                    <h5>Companies Report</h5>
+                    <p class="text-muted small">Export all companies</p>
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-export-csv" onclick="exportCSV('companies')"><i class="fas fa-file-csv me-2"></i>Export CSV</button>
+                        <button class="btn btn-export-pdf" onclick="exportPDF('companies')"><i class="fas fa-file-pdf me-2"></i>Export PDF</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="export-card">
+                    <div class="export-icon"><i class="fas fa-chart-pie"></i></div>
+                    <h5>Statistics Report</h5>
+                    <p class="text-muted small">Export placement statistics</p>
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-export-csv" onclick="exportStatistics('csv')"><i class="fas fa-file-csv me-2"></i>Export CSV</button>
+                        <button class="btn btn-export-pdf" onclick="exportStatistics('pdf')"><i class="fas fa-file-pdf me-2"></i>Export PDF</button>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/main.js"></script>
+    <script>
+        const token = localStorage.getItem('token');
+        const role = localStorage.getItem('role');
+    
+        if (!token || role !== 'admin') window.location.href = '../index.html';
+
+        async function initPage() { await loadAdminInfo(); }
+        initPage();
+
+        // ==================== CSV EXPORT ====================
+        async function exportCSV(type) {
+            const btn = event.target.closest('button');
+            const originalHtml = btn.innerHTML;
+            try {
+                btn.disabled = true;
+                btn.innerHTML = '<span class="spinner-border spinner-sm me-2"></span>Loading...';
+                const response = await fetch(`${API_BASE_URL}/export/${type}`, { headers: getAuthHeaders() });
+                if (!response.ok) throw new Error(`Failed to export ${type}`);
+                const csvText = await response.text();
+                const lines = csvText.trim().split('\n');
+                if (lines.length <= 1) { showNotification(`No ${type} data available`, 'warning'); return; }
+                const blob = new Blob([csvText], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${type}_export_${new Date().toISOString().split('T')[0]}.csv`;
+                a.click();
+                URL.revokeObjectURL(url);
+                showNotification(`${lines.length - 1} records exported!`, 'success');
+            } catch (error) {
+                showNotification(error.message, 'danger');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalHtml;
+            }
+        }
+
+        // ==================== PDF EXPORT (Clean Format) ====================
+        // ==================== PDF EXPORT (Clean Format) ====================
+        async function exportPDF(type) {
+            const btn = event.target.closest('button');
+            const originalHtml = btn.innerHTML;
+            try {
+                btn.disabled = true;
+                btn.innerHTML = '<span class="spinner-border spinner-sm me-2"></span>Loading...';
+        
+                const response = await fetch(`${API_BASE_URL}/export/${type}`, { headers: getAuthHeaders() });
+                if (!response.ok) throw new Error(`Failed to fetch ${type} data`);
+        
+                const csvText = await response.text();
+                if (!csvText.trim()) { showNotification(`No ${type} data available`, 'warning'); return; }
+
+                // Proper CSV parser — handles multiline quoted fields correctly
+                function parseCSVFull(text) {
+                    const rows = [];
+                    let row = [], field = '', inQuotes = false;
+                    const t = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+                    for (let i = 0; i < t.length; i++) {
+                        const ch = t[i];
+                        if (inQuotes) {
+                            if (ch === '"' && t[i+1] === '"') { field += '"'; i++; }
+                            else if (ch === '"') { inQuotes = false; }
+                            else { field += ch; }
+                        } else {
+                            if (ch === '"') { inQuotes = true; }
+                            else if (ch === ',') { row.push(field); field = ''; }
+                            else if (ch === '\n') { row.push(field); field = ''; rows.push(row); row = []; }
+                            else { field += ch; }
+                        }
+                    }
+                    if (field !== '' || row.length) { row.push(field); if (row.some(v => v.trim())) rows.push(row); }
+                    return rows;
+                }
+
+                const allRows = parseCSVFull(csvText);
+                if (allRows.length <= 1) { showNotification(`No ${type} data available`, 'warning'); return; }
+
+                const headers = allRows[0].map(h => h.trim());
+                const data = [];
+                for (let i = 1; i < allRows.length; i++) {
+                    const values = allRows[i];
+                    if (!values || values.every(v => !v.trim())) continue;
+                    const row = {};
+                    headers.forEach((h, idx) => {
+                        let val = (values[idx] || '').trim();
+                        // Normalize all whitespace/newlines to single space
+                        val = val.replace(/[\r\n]+/g, ' ').replace(/\s+/g, ' ').trim();
+                        if (val === '' || val.toLowerCase() === 'null' || val.toLowerCase() === 'undefined') val = '';
+                        row[h] = val;
+                    });
+                    data.push(row);
+                }
+        
+        // Define columns based on report type
+                let columns = [];
+                let title = '';
+                let filename = '';
+        
+                if (type === 'students') {
+                    title = 'STUDENT REPORT';
+                    filename = 'students_report';
+                    columns = [
+                        { header: 'ID', dataKey: 'id', width: 12 },
+                        { header: 'Full Name', dataKey: 'full_name', width: 35 },
+                        { header: 'Email', dataKey: 'email', width: 45 },
+                        { header: 'Roll No', dataKey: 'roll_number', width: 18 },
+                        { header: 'Branch', dataKey: 'branch', width: 18 },
+                        { header: 'Sem', dataKey: 'semester', width: 10 },
+                        { header: 'CGPA', dataKey: 'cgpa', width: 12 },
+                        { header: 'Skills', dataKey: 'skills', width: 55 }
+                    ];
+                } else if (type === 'drives') {
+                    title = 'PLACEMENT DRIVES REPORT';
+                    filename = 'drives_report';
+                    columns = [
+                        { header: 'ID', dataKey: 'id', width: 10 },
+                        { header: 'Company', dataKey: 'company_name', width: 32 },
+                        { header: 'Job Title', dataKey: 'job_title', width: 38 },
+                        { header: 'CGPA Req', dataKey: 'eligibility_cgpa', width: 12 },
+                        { header: 'Last Date', dataKey: 'last_date', width: 20 },
+                        { header: 'Status', dataKey: 'status', width: 12 },
+                        { header: 'Applications', dataKey: 'total_applications', width: 15 }
+                    ];
+                } else if (type === 'applications') {
+                    title = 'APPLICATIONS REPORT';
+                    filename = 'applications_report';
+                    columns = [
+                        { header: 'ID', dataKey: 'id', width: 10 },
+                        { header: 'Student', dataKey: 'student_name', width: 30 },
+                        { header: 'Roll No', dataKey: 'roll_number', width: 18 },
+                        { header: 'Branch', dataKey: 'branch', width: 15 },
+                        { header: 'CGPA', dataKey: 'cgpa', width: 12 },
+                        { header: 'Company', dataKey: 'company_name', width: 28 },
+                        { header: 'Job Title', dataKey: 'job_title', width: 30 },
+                        { header: 'Status', dataKey: 'status', width: 15 },
+                        { header: 'Applied Date', dataKey: 'applied_at', width: 25 }
+                    ];
+                } else if (type === 'companies') {
+                    title = 'COMPANIES REPORT';
+                    filename = 'companies_report';
+                    columns = [
+                        { header: 'ID', dataKey: 'id', width: 12 },
+                        { header: 'Company Name', dataKey: 'name', width: 55 },
+                        { header: 'Industry', dataKey: 'industry', width: 40 },
+                        { header: 'Website', dataKey: 'website', width: 60 },
+                        { header: 'Description', dataKey: 'description', width: 90 }
+                    ];
+                }
+        
+        // Create PDF
+                const { jsPDF } = window.jspdf;
+                const isLandscape = (type === 'companies' || type === 'applications' || type === 'drives');
+                const doc = new jsPDF({ orientation: isLandscape ? 'landscape' : 'portrait', unit: 'mm', format: 'a4' });
+                const pageWidth = doc.internal.pageSize.getWidth();
+        
+        // Add Header
+                doc.setFillColor(10, 25, 41);
+                doc.rect(0, 0, pageWidth, 35, 'F');
+                doc.setFontSize(20);
+                doc.setTextColor(240, 185, 11);
+                doc.setFont('helvetica', 'bold');
+                doc.text(title, 14, 15);
+                doc.setFontSize(9);
+                doc.setTextColor(255, 255, 255);
+                doc.text(`Generated: ${new Date().toLocaleString()}`, 14, 25);
+                doc.text(`Total Records: ${data.length}`, 14, 32);
+        
+        // Prepare table data
+                const tableData = data.map(row => {
+                    return columns.map(col => {
+                        let val = (row[col.dataKey] || '').toString().trim();
+                        if (val === '' || val.toLowerCase() === 'null' || val.toLowerCase() === 'undefined') val = 'N/A';
+
+                        // Description: clean and wrap — no truncation, let autoTable linebreak
+                        if (col.dataKey === 'description' && val !== 'N/A') {
+                            val = val.replace(/[\r\n]+/g, ' ').replace(/\s+/g, ' ').trim();
+                        }
+                        // Website: show full URL, only trim if extremely long
+                        if (col.dataKey === 'website' && val !== 'N/A' && val.length > 60) {
+                            val = val.substring(0, 57) + '...';
+                        }
+                        // Company name: allow up to 50 chars
+                        if (col.dataKey === 'name' && val !== 'N/A' && val.length > 50) {
+                            val = val.substring(0, 47) + '...';
+                        }
+                        return val;
+                    });
+                });
+        
+        // Set font size based on type
+                const fontSize = (type === 'companies') ? 8 : 8;
+        
+                doc.autoTable({
+                    head: [columns.map(c => c.header)],
+                    body: tableData,
+                    startY: 40,
+                    theme: 'grid',
+                    styles: { 
+                        fontSize: fontSize, 
+                        cellPadding: 3, 
+                        valign: 'top', 
+                        overflow: 'linebreak',
+                        cellWidth: 'wrap',
+                        lineColor: [220, 220, 220],
+                        lineWidth: 0.2,
+                        minCellHeight: 10
+                    },
+                    headStyles: { 
+                        fillColor: [10, 25, 41], 
+                        textColor: [255, 255, 255], 
+                        fontStyle: 'bold', 
+                        halign: 'center',
+                        fontSize: 8,
+                        cellPadding: 4
+                    },
+                    alternateRowStyles: { fillColor: [248, 250, 252] },
+                    columnStyles: columns.reduce((acc, col, idx) => {
+                        acc[idx] = { cellWidth: col.width };
+                        return acc;
+                    }, {}),
+                    margin: { left: 8, right: 8 },
+                    didDrawPage: function(data) {
+                        const pageCount = doc.internal.getNumberOfPages();
+                        for (let i = 1; i <= pageCount; i++) {
+                            doc.setPage(i);
+                            doc.setFontSize(8);
+                            doc.setTextColor(128, 128, 128);
+                            doc.text(`Placement System - Page ${i} of ${pageCount}`, pageWidth / 2, doc.internal.pageSize.getHeight() - 6, { align: 'center' });
+                        }
+                    }
+                });
+        
+        // Add Summary Page for Companies
+                if (type === 'companies') {
+                    doc.addPage();
+                    // Header
+                    doc.setFillColor(10, 25, 41);
+                    doc.rect(0, 0, pageWidth, 30, 'F');
+                    doc.setFontSize(18);
+                    doc.setTextColor(240, 185, 11);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text('COMPANIES REPORT - SUMMARY', 14, 18);
+                    doc.setFontSize(9);
+                    doc.setTextColor(255, 255, 255);
+                    doc.setFont('helvetica', 'normal');
+                    doc.text(`Generated: ${new Date().toLocaleString()}`, 14, 27);
+
+                    let withWebsite = 0;
+                    let withIndustry = 0;
+                    const industryCount = {};
+
+                    data.forEach(c => {
+                        if (c.website && c.website !== 'N/A' && c.website !== '' && c.website !== 'null') withWebsite++;
+                        const industry = c.industry;
+                        if (industry && industry !== 'N/A' && industry !== '' && industry !== 'null') {
+                            withIndustry++;
+                            industryCount[industry] = (industryCount[industry] || 0) + 1;
+                        }
+                    });
+
+                    // Stats summary table
+                    const summaryRows = [
+                        ['Total Companies', data.length],
+                        ['Companies with Website', `${withWebsite} (${data.length > 0 ? Math.round(withWebsite/data.length*100) : 0}%)`],
+                        ['Companies with Industry Info', `${withIndustry} (${data.length > 0 ? Math.round(withIndustry/data.length*100) : 0}%)`]
+                    ];
+
+                    doc.autoTable({
+                        head: [['Metric', 'Value']],
+                        body: summaryRows,
+                        startY: 38,
+                        theme: 'grid',
+                        styles: { fontSize: 10, cellPadding: 4 },
+                        headStyles: { fillColor: [10, 25, 41], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center' },
+                        columnStyles: { 0: { cellWidth: 100, fontStyle: 'bold' }, 1: { cellWidth: 60, halign: 'center' } },
+                        alternateRowStyles: { fillColor: [248, 250, 252] },
+                        margin: { left: 14, right: 14 }
+                    });
+
+                    // Industry distribution table
+                    const sortedIndustries = Object.entries(industryCount).sort((a, b) => b[1] - a[1]);
+                    if (sortedIndustries.length > 0) {
+                        const industryRows = sortedIndustries.map(([industry, count]) => [
+                            industry,
+                            count,
+                            `${data.length > 0 ? Math.round(count / data.length * 100) : 0}%`
+                        ]);
+
+                        const afterSummary = doc.lastAutoTable.finalY + 12;
+                        doc.setFontSize(12);
+                        doc.setTextColor(10, 25, 41);
+                        doc.setFont('helvetica', 'bold');
+                        doc.text('Industry Distribution', 14, afterSummary);
+
+                        doc.autoTable({
+                            head: [['Industry', 'No. of Companies', 'Percentage']],
+                            body: industryRows,
+                            startY: afterSummary + 6,
+                            theme: 'grid',
+                            styles: { fontSize: 10, cellPadding: 4 },
+                            headStyles: { fillColor: [10, 25, 41], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center' },
+                            columnStyles: {
+                                0: { cellWidth: 100 },
+                                1: { cellWidth: 50, halign: 'center' },
+                                2: { cellWidth: 40, halign: 'center' }
+                            },
+                            alternateRowStyles: { fillColor: [248, 250, 252] },
+                            margin: { left: 14, right: 14 }
+                        });
+                    } else {
+                        const afterSummary = doc.lastAutoTable.finalY + 12;
+                        doc.setFontSize(10);
+                        doc.setTextColor(100, 100, 100);
+                        doc.setFont('helvetica', 'normal');
+                        doc.text('No industry data available.', 14, afterSummary);
+                    }
+                } else if (type === 'students') {
+                    doc.addPage();
+                    doc.setFillColor(10, 25, 41);
+                    doc.rect(0, 0, pageWidth, 30, 'F');
+                    doc.setFontSize(18);
+                    doc.setTextColor(240, 185, 11);
+                    doc.text('STUDENT REPORT - SUMMARY', 14, 18);
+            
+                    doc.setFontSize(10);
+                    doc.setTextColor(0, 0, 0);
+                    let yPos = 40;
+            
+                    let withProfile = 0, withResume = 0, withSkills = 0, totalCgpa = 0, cgpaCount = 0;
+                    const branchCount = {};
+                    data.forEach(s => {
+                        if (s.roll_number && s.roll_number !== 'N/A') withProfile++;
+                        if (s.resume_path && s.resume_path !== 'N/A') withResume++;
+                        if (s.skills && s.skills !== 'N/A') withSkills++;
+                        const cgpa = parseFloat(s.cgpa);
+                        if (!isNaN(cgpa)) { totalCgpa += cgpa; cgpaCount++; }
+                        const branch = s.branch;
+                        if (branch && branch !== 'N/A') branchCount[branch] = (branchCount[branch] || 0) + 1;
+                    });
+                    doc.text(`Total Students: ${data.length}`, 14, yPos); yPos += 8;
+                    doc.text(`Students with Profile: ${withProfile} (${Math.round(withProfile/data.length*100)}%)`, 14, yPos); yPos += 8;
+                    doc.text(`Students with Resume: ${withResume} (${Math.round(withResume/data.length*100)}%)`, 14, yPos); yPos += 8;
+                    doc.text(`Students with Skills: ${withSkills} (${Math.round(withSkills/data.length*100)}%)`, 14, yPos); yPos += 8;
+                    doc.text(`Average CGPA: ${cgpaCount > 0 ? (totalCgpa/cgpaCount).toFixed(2) : 'N/A'}`, 14, yPos); yPos += 15;
+                    doc.setFont('helvetica', 'bold');
+                    doc.text('Branch Distribution:', 14, yPos); yPos += 8;
+                    doc.setFont('helvetica', 'normal');
+                    Object.entries(branchCount).sort((a,b) => b[1] - a[1]).forEach(([branch, count]) => {
+                        const percent = Math.round(count / data.length * 100);
+                        doc.text(`• ${branch}: ${count} students (${percent}%)`, 20, yPos);
+                        yPos += 6;
+                    });
+                } else if (type === 'drives') {
+                    doc.addPage();
+                    doc.setFillColor(10, 25, 41);
+                    doc.rect(0, 0, pageWidth, 30, 'F');
+                    doc.setFontSize(18);
+                    doc.setTextColor(240, 185, 11);
+                    doc.text('DRIVES REPORT - SUMMARY', 14, 18);
+            
+                    doc.setFontSize(10);
+                    doc.setTextColor(0, 0, 0);
+                    let yPos = 40;
+
+                    let active=0, closed=0, draft=0, totalOffers=0, totalCgpa=0;
+                    data.forEach(d => {
+                        const status = (d.status || '').toLowerCase();
+                        if (status === 'active') active++;
+                        else if (status === 'closed') closed++;
+                        else if (status === 'draft') draft++;
+                        totalOffers += parseInt(d.max_offers) || 0;
+                        totalCgpa += parseFloat(d.eligibility_cgpa) || 0;
+                    });
+                    doc.text(`Total Drives: ${data.length}`, 14, yPos); yPos += 8;
+                    doc.text(`Active Drives: ${active}`, 14, yPos); yPos += 8;
+                    doc.text(`Closed Drives: ${closed}`, 14, yPos); yPos += 8;
+                    doc.text(`Draft Drives: ${draft}`, 14, yPos); yPos += 8;
+                    doc.text(`Total Offers: ${totalOffers}`, 14, yPos); yPos += 8;
+                    doc.text(`Average Required CGPA: ${data.length > 0 ? (totalCgpa/data.length).toFixed(2) : 'N/A'}`, 14, yPos);
+                } else if (type === 'applications') {
+                    doc.addPage();
+                    doc.setFillColor(10, 25, 41);
+                    doc.rect(0, 0, pageWidth, 30, 'F');
+                    doc.setFontSize(18);
+                    doc.setTextColor(240, 185, 11);
+                    doc.text('APPLICATIONS REPORT - SUMMARY', 14, 18);
+
+                    doc.setFontSize(10);
+                    doc.setTextColor(0, 0, 0);
+                    let yPos = 40;
+                    
+                    let applied=0, shortlisted=0, selected=0, rejected=0;
+                    data.forEach(a => {
+                        const status = (a.status || '').toLowerCase();
+                        if (status === 'applied') applied++;
+                        else if (status === 'shortlisted') shortlisted++;
+                        else if (status === 'selected') selected++;
+                        else if (status === 'rejected') rejected++;
+                    });
+                    doc.text(`Total Applications: ${data.length}`, 14, yPos); yPos += 8;
+                    doc.text(`Applied: ${applied}`, 14, yPos); yPos += 8;
+                    doc.text(`Shortlisted: ${shortlisted}`, 14, yPos); yPos += 8;
+                    doc.text(`Selected: ${selected}`, 14, yPos); yPos += 8;
+                    doc.text(`Rejected: ${rejected}`, 14, yPos); yPos += 8;
+                    doc.text(`Selection Rate: ${data.length > 0 ? Math.round(selected/data.length*100) : 0}%`, 14, yPos);
+                }
+        
+                doc.save(`${filename}_${new Date().toISOString().split('T')[0]}.pdf`);
+                showNotification(`${data.length} records exported to PDF!`, 'success');
+        
+            } catch (error) {
+                console.error('PDF export error:', error);
+                showNotification(error.message || 'PDF export failed', 'danger');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalHtml;
+            }
+        }
+
+        // ==================== STATISTICS EXPORT ====================
+        async function exportStatistics(format) {
+            const btn = event.target.closest('button');
+            const originalHtml = btn.innerHTML;
+            try {
+                btn.disabled = true;
+                btn.innerHTML = '<span class="spinner-border spinner-sm me-2"></span>Loading...';
+                
+                const [placementStats, driveStats, studentStats] = await Promise.all([
+                    fetch(`${API_BASE_URL}/admin/placement-stats`, { headers: getAuthHeaders() }).then(r => r.json()),
+                    fetch(`${API_BASE_URL}/admin/drives/stats/overview`, { headers: getAuthHeaders() }).then(r => r.json()),
+                    fetch(`${API_BASE_URL}/admin/students/stats/overview`, { headers: getAuthHeaders() }).then(r => r.json())
+                ]);
+                
+                const statsData = [
+                    { Metric: 'Total Students', Value: studentStats.total_students || 0 },
+                    { Metric: 'Students with Profile', Value: studentStats.with_profile || 0 },
+                    { Metric: 'Students with Resume', Value: studentStats.with_resume || 0 },
+                    { Metric: 'Email Verified Students', Value: studentStats.verified || 0 },
+                    { Metric: 'Profile Completion Rate', Value: `${studentStats.profile_completion_percent || 0}%` },
+                    { Metric: 'Resume Upload Rate', Value: `${studentStats.resume_percent || 0}%` },
+                    { Metric: 'Total Drives', Value: driveStats.total_drives || 0 },
+                    { Metric: 'Active Drives', Value: driveStats.active_drives || 0 },
+                    { Metric: 'Completed Drives', Value: driveStats.completed_drives || 0 },
+                    { Metric: 'Draft Drives', Value: driveStats.draft_drives || 0 },
+                    { Metric: 'Avg Applications per Drive', Value: driveStats.avg_applications_per_drive || 0 },
+                    { Metric: 'Total Applications', Value: placementStats.total_applications || 0 },
+                    { Metric: 'Placed Students', Value: placementStats.placed_students || 0 },
+                    { Metric: 'Placement Rate', Value: `${placementStats.placement_rate || 0}%` }
+                ];
+                
+                if (format === 'csv') {
+                    const csvRows = ['Metric,Value'];
+                    statsData.forEach(s => csvRows.push(`${s.Metric},${s.Value}`));
+                    const blob = new Blob([csvRows.join('\n')], { type: 'text/csv' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `statistics_export_${new Date().toISOString().split('T')[0]}.csv`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                    showNotification('Statistics exported to CSV!', 'success');
+                } else {
+                    const { jsPDF } = window.jspdf;
+                    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+                    const pageWidth = doc.internal.pageSize.getWidth();
+                    
+                    doc.setFillColor(10, 25, 41);
+                    doc.rect(0, 0, pageWidth, 35, 'F');
+                    doc.setFontSize(20);
+                    doc.setTextColor(240, 185, 11);
+                    doc.text('PLACEMENT STATISTICS REPORT', 14, 18);
+                    doc.setFontSize(9);
+                    doc.setTextColor(255, 255, 255);
+                    doc.text(`Generated: ${new Date().toLocaleString()}`, 14, 28);
+                    
+                    const tableData = statsData.map(s => [s.Metric, String(s.Value)]);
+                    doc.autoTable({
+                        head: [['Metric', 'Value']],
+                        body: tableData,
+                        startY: 42,
+                        theme: 'grid',
+                        styles: { fontSize: 10, cellPadding: 5 },
+                        headStyles: { fillColor: [10, 25, 41], textColor: [255, 255, 255], fontStyle: 'bold' },
+                        columnStyles: { 0: { cellWidth: 80 }, 1: { cellWidth: 40 } }
+                    });
+                    doc.save(`statistics_report_${new Date().toISOString().split('T')[0]}.pdf`);
+                    showNotification('Statistics exported to PDF!', 'success');
+                }
+            } catch (error) {
+                showNotification('Failed to export statistics', 'danger');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalHtml;
+            }
+        }
+
+        // ==================== DATE RANGE EXPORT ====================
+        async function exportDateRange() {
+            const fromDate = document.getElementById('fromDate').value;
+            const toDate = document.getElementById('toDate').value;
+            const btn = event.target;
+            const originalHtml = btn.innerHTML;
+            if (!fromDate || !toDate) { showNotification('Please select both dates', 'warning'); return; }
+            try {
+                btn.disabled = true;
+                btn.innerHTML = '<span class="spinner-border spinner-sm me-2"></span>Loading...';
+                const response = await fetch(`${API_BASE_URL}/export/applications`, { headers: getAuthHeaders() });
+                const csvText = await response.text();
+                const lines = csvText.trim().split('\n');
+                if (lines.length <= 1) { showNotification('No applications found', 'warning'); return; }
+                const headers = parseCSVLine(lines[0]);
+                const allApps = [];
+                for (let i = 1; i < lines.length; i++) {
+                    const values = parseCSVLine(lines[i]);
+                    const row = {};
+                    headers.forEach((h, idx) => { row[h] = values[idx] || ''; });
+                    allApps.push(row);
+                }
+                const filtered = allApps.filter(app => {
+                    if (!app.applied_at) return false;
+                    const appDate = app.applied_at.split('T')[0];
+                    return appDate >= fromDate && appDate <= toDate;
+                });
+                if (filtered.length === 0) { showNotification(`No applications found between ${fromDate} and ${toDate}`, 'warning'); return; }
+                const exportHeaders = Object.keys(filtered[0]);
+                const csvRows = [exportHeaders.join(',')];
+                filtered.forEach(row => {
+                    const values = exportHeaders.map(h => {
+                        let val = row[h] || '';
+                        if (val.includes(',') || val.includes('"')) val = `"${val.replace(/"/g, '""')}"`;
+                        return val;
+                    });
+                    csvRows.push(values.join(','));
+                });
+                const blob = new Blob([csvRows.join('\n')], { type: 'text/csv' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `applications_${fromDate}_to_${toDate}.csv`;
+                a.click();
+                URL.revokeObjectURL(url);
+                showNotification(`${filtered.length} applications exported!`, 'success');
+            } catch (error) {
+                showNotification('Export failed', 'danger');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalHtml;
+            }
+        }
+
+        function parseCSVLine(line) {
+            const result = [];
+            let current = '', inQuotes = false;
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+                if (char === '"') inQuotes = !inQuotes;
+                else if (char === ',' && !inQuotes) { result.push(current); current = ''; }
+                else current += char;
+            }
+            result.push(current);
+            return result.map(v => v.replace(/^"|"$/g, ''));
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard | Placement System</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/placement-theme.css">
+    
+    <style>
+        .welcome-banner {
+            background: linear-gradient(135deg, #6b6a7b, #1A2A3A);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        .profile-progress {
+            background: rgba(255,255,255,0.1);
+            border-radius: 50px;
+            padding: 5px;
+            margin-top: 15px;
+        }
+        .profile-progress-bar {
+            height: 10px;
+            background: #F0B90B;
+            border-radius: 50px;
+            transition: width 1s ease;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="dashboard.html">
+                <i class="fas fa-graduation-cap"></i>
+                Placement System
+            </a>
+            
+            <div class="d-flex align-items-center">
+                <div class="dropdown me-3">
+                    <button class="btn btn-link text-white position-relative p-0" data-bs-toggle="dropdown">
+                        <i class="fas fa-bell fs-5"></i>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-secondary" 
+                              id="notificationBadge" style="display: none;">0</span>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-end" style="width: 320px;" id="notificationList">
+                        <div class="text-center p-3">Loading...</div>
+                    </div>
+                </div>
+                
+                <div class="dropdown">
+                    <button class="btn btn-link text-white text-decoration-none d-flex align-items-center" data-bs-toggle="dropdown">
+                        <span class="me-2 d-none d-md-inline" id="userName">Student</span>
+                        <i class="fas fa-user-circle fs-4"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="profile.html"><i class="fas fa-user me-2"></i>My Profile</a></li>
+                        <li><a class="dropdown-item" href="applications.html"><i class="fas fa-file-alt me-2"></i>Applications</a></li>
+                        <li><a class="dropdown-item" href="drives.html"><i class="fas fa-briefcase me-2"></i>Placement Drives</a></li>
+                        <li><a class="dropdown-item" href="ai-prediction.html"><i class="fas fa-robot me-2"></i>AI Predictions</a></li>
+                        <li><a class="dropdown-item" href="skill-gap.html"><i class="fas fa-chart-line me-2"></i>Skill Analysis</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="#" onclick="logout()"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-4">
+        <!-- Welcome Banner -->
+        <div class="welcome-banner">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h2 class="fw-bold mb-2">Welcome back, <span id="userFullName">Student</span>! 👋</h2>
+                    <p class="mb-0 opacity-75">Track your placement journey and improve your skills with AI insights.</p>
+                    
+                    <div class="profile-progress">
+                        <div class="d-flex justify-content-between mb-1">
+                            <small>Profile Completion</small>
+                            <small id="profilePercent">0%</small>
+                        </div>
+                        <div class="profile-progress-bar" id="profileProgress" style="width: 0%;"></div>
+                    </div>
+                </div>
+                <div class="col-md-4 text-end d-none d-md-block">
+                    <i class="fas fa-calendar-alt fa-3x opacity-50 mb-2"></i>
+                    <p class="mb-0 small" id="currentDate"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-briefcase"></i>
+                </div>
+                <div class="stat-value" id="activeDrives">0</div>
+                <div class="stat-label">Active Drives</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <div class="stat-value" id="applications">0</div>
+                <div class="stat-label">Applications</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-value" id="shortlisted">0</div>
+                <div class="stat-label">Shortlisted</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div class="stat-value" id="selected">0</div>
+                <div class="stat-label">Selected</div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <h4 class="mb-3 fw-bold">Quick Actions</h4>
+        <div class="features-grid">
+            <div class="feature-card" onclick="location.href='profile.html'">
+                <div class="feature-icon">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <h5>My Profile</h5>
+                <p class="text-muted small">View and edit your profile</p>
+            </div>
+            <div class="feature-card" onclick="location.href='upload-resume.html'">
+                <div class="feature-icon">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <h5>Upload Resume</h5>
+                <p class="text-muted small">Upload and parse your resume</p>
+            </div>
+            <div class="feature-card" onclick="location.href='drives.html'">
+                <div class="feature-icon">
+                    <i class="fas fa-briefcase"></i>
+                </div>
+                <h5>Placement Drives</h5>
+                <p class="text-muted small">View and apply to drives</p>
+            </div>
+            <div class="feature-card" onclick="location.href='applications.html'">
+                <div class="feature-icon">
+                    <i class="fas fa-clipboard-list"></i>
+                </div>
+                <h5>My Applications</h5>
+                <p class="text-muted small">Track application status</p>
+            </div>
+            <div class="feature-card" onclick="location.href='ai-prediction.html'">
+                <div class="feature-icon">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <h5>AI Predictions</h5>
+                <p class="text-muted small">Get selection probability</p>
+            </div>
+            <div class="feature-card" onclick="location.href='skill-gap.html'">
+                <div class="feature-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h5>Skill Analysis</h5>
+                <p class="text-muted small">Identify skill gaps</p>
+            </div>
+        </div>
+
+        <!-- Recent Drives -->
+        <div class="card mt-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span><i class="fas fa-briefcase me-2 text-secondary"></i>Recent Placement Drives</span>
+                <a href="drives.html" class="btn btn-sm btn-outline-secondary">View All</a>
+            </div>
+            <div class="card-body" id="recentDrives">
+                <div class="text-center py-4">
+                    <div class="spinner-border text-secondary"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        // Check authentication
+        const token = localStorage.getItem('token');
+        if (!token) {
+            window.location.href = 'index.html';
+        }
+        
+        async function loadDashboardData() {
+            try {
+                const user = await loadUserInfo();
+                
+                // Get profile
+                const profileRes = await fetch(`${API_BASE_URL}/student/profile`, {
+                    headers: getAuthHeaders()
+                });
+                if (profileRes.ok) {
+                    const profile = await profileRes.json();
+                    const completion = calculateProfileCompletion(profile);
+                    document.getElementById('profilePercent').textContent = completion + '%';
+                    document.getElementById('profileProgress').style.width = completion + '%';
+                }
+
+                // Get drives
+                const drivesRes = await fetch(`${API_BASE_URL}/student/drives`, {
+                    headers: getAuthHeaders()
+                });
+                if (drivesRes.ok) {
+                    const drives = await drivesRes.json();
+                    document.getElementById('activeDrives').textContent = drives.length;
+                    
+                    const recentDrives = drives.slice(0, 3);
+                    let html = '<div class="row">';
+                    recentDrives.forEach(drive => {
+                        html += `
+                            <div class="col-md-4 mb-3">
+                                <div class="drive-card">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div class="company-logo me-3">${drive.company_name?.charAt(0)}</div>
+                                        <div>
+                                            <h6 class="fw-bold mb-1">${drive.company_name}</h6>
+                                            <small class="text-muted">${drive.job_title}</small>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <small class="text-muted">
+                                            <i class="far fa-calendar-alt me-1"></i>
+                                            ${formatDate(drive.last_date)}
+                                        </small>
+                                        <span class="badge badge-applied">${drive.applied ? 'Applied' : 'Open'}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    html += '</div>';
+                    document.getElementById('recentDrives').innerHTML = html;
+                }
+
+                // Get applications
+                const appsRes = await fetch(`${API_BASE_URL}/student/my-applications`, {
+                    headers: getAuthHeaders()
+                });
+                if (appsRes.ok) {
+                    const apps = await appsRes.json();
+                    document.getElementById('applications').textContent = apps.length;
+                    document.getElementById('shortlisted').textContent = 
+                        apps.filter(a => a.status === 'shortlisted').length;
+                    document.getElementById('selected').textContent = 
+                        apps.filter(a => a.status === 'selected').length;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        loadDashboardData();
+    </script>
+</body>
+</html>

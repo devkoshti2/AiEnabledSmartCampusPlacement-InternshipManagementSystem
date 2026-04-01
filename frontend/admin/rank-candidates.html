@@ -1,0 +1,860 @@
+<!-- admin/rank-candidates.html - COMPLETE FIXED VERSION -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rank Candidates | Admin</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/placement-theme.css">
+
+    <style>
+        /* Sidebar Styles */
+        .sidebar {
+            background: #0A1929;
+            min-height: 100vh;
+            position: fixed;
+            width: 260px;
+            color: white;
+            z-index: 1000;
+        }
+
+        .sidebar-header {
+            padding: 30px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-header h4 {
+            color: white;
+            margin: 0;
+        }
+
+        .sidebar-header small {
+            color: #F0B90B;
+        }
+
+        .sidebar-nav {
+            padding: 20px 0;
+        }
+
+        .sidebar-nav a {
+            display: block;
+            padding: 12px 25px;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+        }
+
+        .sidebar-nav a:hover,
+        .sidebar-nav a.active {
+            background: rgba(240, 185, 11, 0.1);
+            color: #F0B90B;
+            border-left-color: #F0B90B;
+        }
+
+        .sidebar-nav a i {
+            width: 25px;
+            margin-right: 10px;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 260px;
+            padding: 30px;
+        }
+
+        .top-bar {
+            background: white;
+            padding: 15px 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Drive Info Card */
+        .drive-info-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #F0B90B;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .drive-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #0A1929;
+        }
+
+        .drive-company {
+            color: #F0B90B;
+            font-weight: 500;
+        }
+
+        .drive-meta {
+            display: flex;
+            gap: 20px;
+            margin-top: 10px;
+            color: #6B7280;
+        }
+
+        /* Candidate Cards */
+        .candidate-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border: 1px solid #E5E7EB;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .candidate-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            border-color: #F0B90B;
+        }
+
+        .rank-1 {
+            border-left: 6px solid #FFD700;
+        }
+
+        .rank-2 {
+            border-left: 6px solid #C0C0C0;
+        }
+
+        .rank-3 {
+            border-left: 6px solid #CD7F32;
+        }
+
+        /* Action Buttons */
+        .action-btn {
+            width: 35px;
+            height: 35px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 3px;
+            transition: all 0.2s;
+            border: none;
+        }
+
+        .action-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .btn-view {
+            background: #E3F2FD;
+            color: #0A1929;
+        }
+
+        .btn-shortlist {
+            background: #E8F5E9;
+            color: #27AE60;
+        }
+
+        .btn-select {
+            background: #D4EDDA;
+            color: #155724;
+        }
+
+        /* Progress Bar */
+        .skill-progress {
+            height: 6px;
+            border-radius: 3px;
+            background: #F0F0F0;
+            margin: 8px 0;
+        }
+
+        .skill-progress-bar {
+            height: 100%;
+            border-radius: 3px;
+            background: linear-gradient(90deg, #0A1929, #F0B90B);
+        }
+
+        /* Stats Cards */
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border: 1px solid #E5E7EB;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #0A1929;
+        }
+
+        .stat-label {
+            color: #6B7280;
+            font-size: 0.9rem;
+        }
+
+        /* Filter Section */
+        .filter-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #E5E7EB;
+        }
+
+        /* Weight Inputs */
+        .weight-input {
+            width: 80px;
+            text-align: center;
+            border: 1px solid #E5E7EB;
+            border-radius: 6px;
+            padding: 5px;
+        }
+
+        /* Status Badges */
+        .badge-applied {
+            background: #E3F2FD;
+            color: #0A1929;
+            padding: 5px 12px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .badge-not_applied {
+            background: #F3F4F6;
+            color: #6B7280;
+            padding: 5px 12px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .badge-shortlisted {
+            background: #E8F5E9;
+            color: #27AE60;
+            padding: 5px 12px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .badge-selected {
+            background: #D4EDDA;
+            color: #155724;
+            padding: 5px 12px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .badge-rejected {
+            background: #FFEBEE;
+            color: #EB5757;
+            padding: 5px 12px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h4><i class="fas fa-graduation-cap me-2" style="color: #F0B90B;"></i>Admin Panel</h4>
+            <small>Placement System</small>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="dashboard.html"><i class="fas fa-chart-pie"></i> Dashboard</a>
+            <a href="companies.html"><i class="fas fa-building"></i> Companies</a>
+            <a href="drives.html"><i class="fas fa-briefcase"></i> Drives</a>
+            <a href="students.html"><i class="fas fa-users"></i> Students</a>
+            <a href="analytics.html"><i class="fas fa-chart-line"></i> Analytics</a>
+            <a href="models-dashboard.html"><i class="fas fa-robot"></i> AI Models</a>
+            <a href="export-reports.html"><i class="fas fa-download"></i> Export</a>
+            <a href="rank-candidates.html" class="active"><i class="fas fa-chart-line"></i> Ranking</a>
+            <a href="#" onclick="adminLogout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <h4 class="fw-bold mb-0">
+                <i class="fas fa-chart-line me-2 text-secondary"></i>
+                AI-Powered Candidate Ranking
+            </h4>
+            <div class="d-flex align-items-center">
+                <span class="fw-bold" id="adminName">Admin</span>
+            </div>
+        </div>
+
+        <!-- Drive Info -->
+        <div class="drive-info-card" id="driveInfo">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="drive-company" id="driveCompany">Loading company...</span>
+                    <h3 class="drive-title" id="driveTitle">Loading drive details...</h3>
+                    <div class="drive-meta" id="driveMeta">
+                        <span><i class="far fa-calendar-alt me-1"></i> Last Date: <span
+                                id="driveLastDate">-</span></span>
+                        <span><i class="fas fa-star me-1"></i> CGPA Required: <span id="driveCgpa">-</span></span>
+                    </div>
+                </div>
+                <div>
+                    <span class="badge bg-warning" id="driveStatus">Active</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <div class="row">
+                <div class="col-md-2">
+                    <label class="form-label">Show Students</label>
+                    <select class="form-control" id="showAppliedOnly">
+                        <option value="true">Applied Only</option>
+                        <option value="false" selected>All Eligible</option>
+                    </select>
+                    <!-- ✅ FIXED: Yeh line ab UI mein nahi dikhegi -->
+                    <small class="text-muted d-none" id="eligibilityNote">Debug info</small>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Ranking Method</label>
+                    <select class="form-control" id="rankingMethod">
+                        <option value="ensemble">Ensemble (Recommended)</option>
+                        <option value="pointwise">Pointwise (Score-based)</option>
+                        <option value="pairwise">Pairwise (Comparison)</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Include Ineligible</label>
+                    <select class="form-control" id="includeIneligible">
+                        <option value="false" selected>No - Eligible Only</option>
+                        <option value="true">Yes - All Students</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Show Top</label>
+                    <select class="form-control" id="topK">
+                        <option value="10">10 Candidates</option>
+                        <option value="20" selected>20 Candidates</option>
+                        <option value="50">50 Candidates</option>
+                        <option value="100">100 Candidates</option>
+                    </select>
+                </div>
+                <div class="col-md-1">
+                    <label class="form-label">&nbsp;</label>
+                    <button class="btn btn-primary w-100" onclick="loadRankings()">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Custom Weights -->
+            <div class="row mt-3">
+                <div class="col-12">
+                    <label class="form-label fw-bold">Custom Ranking Weights</label>
+                </div>
+                <div class="col-md-2">
+                    <label class="small">CGPA</label>
+                    <input type="number" class="weight-input" id="weightCgpa" value="0.25" step="0.05" min="0" max="1">
+                </div>
+                <div class="col-md-2">
+                    <label class="small">Skills</label>
+                    <input type="number" class="weight-input" id="weightSkills" value="0.35" step="0.05" min="0"
+                        max="1">
+                </div>
+                <div class="col-md-2">
+                    <label class="small">Experience</label>
+                    <input type="number" class="weight-input" id="weightExp" value="0.20" step="0.05" min="0" max="1">
+                </div>
+                <div class="col-md-2">
+                    <label class="small">Projects</label>
+                    <input type="number" class="weight-input" id="weightProjects" value="0.20" step="0.05" min="0"
+                        max="1">
+                </div>
+                <div class="col-md-2">
+                    <label class="small">&nbsp;</label>
+                    <button class="btn btn-sm btn-outline-primary d-block" onclick="applyCustomWeights()">
+                        Apply Weights
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalCandidates">0</div>
+                    <div class="stat-label">Total Eligible</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-value" id="appliedCount">0</div>
+                    <div class="stat-label">Applied Students</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-value" id="avgCgpa">0</div>
+                    <div class="stat-label">Avg CGPA</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-value" id="topScore">0%</div>
+                    <div class="stat-label">Top Score</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Export Button -->
+        <div class="text-end mb-3">
+            <button class="btn btn-success" onclick="exportRankings()">
+                <i class="fas fa-download me-2"></i>Export Rankings (CSV)
+            </button>
+        </div>
+
+        <!-- Candidates List -->
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-users me-2 text-secondary"></i>
+                Ranked Candidates
+            </div>
+            <div class="card-body" id="candidatesList">
+                <div class="text-center py-5">
+                    <div class="spinner-border text-secondary mb-3"></div>
+                    <p>Loading rankings...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/main.js"></script>
+
+    <script>
+        // Get drive ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const driveId = urlParams.get('id');
+
+        if (!driveId) {
+            window.location.href = 'drives.html';
+        }
+
+        let currentRankings = null;
+        let driveDetails = null;
+
+        // Load drive details
+        async function loadDriveDetails() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/admin/drives/${driveId}`, {
+                    headers: getAuthHeaders()
+                });
+
+                if (response.ok) {
+                    driveDetails = await response.json();
+                    displayDriveDetails(driveDetails);
+                } else {
+                    document.getElementById('driveInfo').innerHTML = `
+                        <div class="alert alert-danger mb-0">
+                            Failed to load drive details
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading drive details:', error);
+            }
+        }
+
+        function displayDriveDetails(drive) {
+            document.getElementById('driveCompany').textContent = drive.company_name || 'Company';
+            document.getElementById('driveTitle').textContent = drive.job_title || 'Job Title';
+            document.getElementById('driveLastDate').textContent = drive.last_date ? new Date(drive.last_date).toLocaleDateString() : 'N/A';
+            document.getElementById('driveCgpa').textContent = drive.eligibility_cgpa || 'N/A';
+            document.getElementById('driveStatus').textContent = drive.status || 'Active';
+        }
+
+        async function loadRankings() {
+            try {
+                const method = document.getElementById('rankingMethod').value;
+                const includeIneligible = document.getElementById('includeIneligible').value === 'true';
+                const topK = document.getElementById('topK').value;
+                const showAppliedOnly = document.getElementById('showAppliedOnly').value === 'true';
+
+                document.getElementById('candidatesList').innerHTML = `
+            <div class="text-center py-5">
+                <div class="spinner-border text-secondary mb-3"></div>
+                <p>Loading rankings...</p>
+            </div>
+        `;
+
+                // API call with parameters
+                const response = await fetch(
+                    `${API_BASE_URL}/ranking/rank-candidates/${driveId}?method=${method}&include_ineligible=${includeIneligible}&top_k=${topK}&only_applied=${showAppliedOnly}`,
+                    { headers: getAuthHeaders() }
+                );
+
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log("Ranking data received:", data);
+                    currentRankings = data;
+                    displayRankings(data);
+                    updateStats(data);
+                } else {
+                    const errorData = await response.json();
+                    console.error("API Error:", errorData);
+                    document.getElementById('candidatesList').innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    Failed to load rankings: ${errorData.detail || 'Unknown error'}
+                </div>
+            `;
+                }
+            } catch (error) {
+                console.error('Error loading rankings:', error);
+                document.getElementById('candidatesList').innerHTML = `
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                Network error: ${error.message}
+            </div>
+        `;
+            }
+        }
+
+        function displayRankings(data) {
+            const container = document.getElementById('candidatesList');
+
+            if (!data.ranked_candidates || data.ranked_candidates.length === 0) {
+                container.innerHTML = '<p class="text-muted text-center py-4">No candidates found</p>';
+                return;
+            }
+
+            let html = '<div class="table-responsive">';
+            html += '<table class="table table-hover">';
+            html += `
+        <thead>
+            <tr>
+                <th>Rank</th>
+                <th>Student</th>
+                <th>CGPA</th>
+                <th>Skills Match</th>
+                <th>Experience</th>
+                <th>Score</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+    `;
+
+            data.ranked_candidates.forEach((candidate, index) => {
+                const rankClass = index < 3 ? `rank-${index + 1}` : '';
+                const scorePercent = Math.round((candidate.rank_score || 0) * 100);
+
+                const cgpa = candidate.component_scores?.cgpa_score ?
+                    (candidate.component_scores.cgpa_score * 10).toFixed(2) : 'N/A';
+
+                const skillScore = candidate.component_scores?.skill_score ?
+                    Math.round(candidate.component_scores.skill_score * 100) : 0;
+
+                const expStatus = candidate.component_scores?.experience_score ? 'Yes' : 'No';
+
+                // ===== FIXED: Status badge based on application status =====
+                const appStatus = candidate.application_status || 'not_applied';
+                console.log(`Candidate ${candidate.name}: Status = ${appStatus}`); // Debug
+
+                let statusClass = 'badge-not_applied';
+                let statusText = 'Not Applied';
+                let showShortlist = false;
+
+                if (appStatus === 'applied') {
+                    statusClass = 'badge-applied';
+                    statusText = 'Applied';
+                    showShortlist = true;
+                } else if (appStatus === 'shortlisted') {
+                    statusClass = 'badge-shortlisted';
+                    statusText = 'Shortlisted';
+                    showShortlist = false;
+                } else if (appStatus === 'selected') {
+                    statusClass = 'badge-selected';
+                    statusText = 'Selected';
+                    showShortlist = false;
+                } else if (appStatus === 'rejected') {
+                    statusClass = 'badge-rejected';
+                    statusText = 'Rejected';
+                    showShortlist = false;
+                }
+
+                html += `
+                    <tr class="${rankClass}">
+                        <td><strong>#${index + 1}</strong></td>
+                        <td>
+                            <strong>${candidate.name || 'Unknown'}</strong><br>
+                            <small class="text-muted">ID: ${candidate.candidate_id || 'N/A'}</small>
+                        </td>
+                        <td>${cgpa}</td>
+                        <td>
+                            <div class="progress" style="height: 5px;">
+                                <div class="progress-bar" style="width: ${skillScore}%"></div>
+                            </div>
+                            <small>${skillScore}%</small>
+                        </td>
+                        <td>${expStatus}</td>
+                        <td><strong>${scorePercent}%</strong></td>
+                        <td><span class="badge ${statusClass}">${statusText}</span></td>
+                        <td>
+                            <button class="btn btn-sm action-btn btn-view" onclick="viewCandidate(${candidate.candidate_id})" title="View">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            ${showShortlist ? `
+                                <button class="btn btn-sm action-btn btn-shortlist" onclick="shortlistCandidate(${candidate.candidate_id})" title="Shortlist">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                            ` : ''}
+                        </td>
+                    </tr>
+                `;
+            });
+
+            html += '</tbody></table></div>';
+            container.innerHTML = html;
+        }
+
+        function updateStats(data) {
+            document.getElementById('totalCandidates').textContent = data.total_candidates || 0;
+
+            // Applied count from API
+            document.getElementById('appliedCount').textContent = data.applied_candidates || 0;
+
+            // Calculate average CGPA
+            let totalCgpa = 0;
+            let cgpaCount = 0;
+            data.ranked_candidates?.forEach(c => {
+                if (c.component_scores?.cgpa_score) {
+                    totalCgpa += c.component_scores.cgpa_score * 10;
+                    cgpaCount++;
+                }
+            });
+            const avgCgpa = cgpaCount > 0 ? (totalCgpa / cgpaCount).toFixed(2) : '0';
+            document.getElementById('avgCgpa').textContent = avgCgpa;
+
+            // Top score
+            if (data.ranked_candidates?.length > 0) {
+                const topScore = Math.round((data.ranked_candidates[0].rank_score || 0) * 100);
+                document.getElementById('topScore').textContent = topScore + '%';
+            }
+        }
+
+        // Filter change events
+        document.getElementById('showAppliedOnly').addEventListener('change', loadRankings);
+        document.getElementById('rankingMethod').addEventListener('change', loadRankings);
+        document.getElementById('includeIneligible').addEventListener('change', loadRankings);
+        document.getElementById('topK').addEventListener('change', loadRankings);
+
+        // Apply custom weights
+        async function applyCustomWeights() {
+            const weights = {
+                cgpa_score: parseFloat(document.getElementById('weightCgpa').value) || 0.25,
+                skill_score: parseFloat(document.getElementById('weightSkills').value) || 0.35,
+                experience_score: parseFloat(document.getElementById('weightExp').value) || 0.20,
+                project_score: parseFloat(document.getElementById('weightProjects').value) || 0.20
+            };
+
+            // Validate weights sum to 1
+            const total = Object.values(weights).reduce((a, b) => a + b, 0);
+            if (Math.abs(total - 1) > 0.01) {
+                showNotification('Weights must sum to 1.0', 'warning');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/ranking/rank-with-weights/${driveId}?top_k=50`, {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify(weights)
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    currentRankings = data;
+                    displayRankings(data);
+                    showNotification('Custom weights applied successfully!', 'success');
+                } else {
+                    const error = await response.json();
+                    showNotification('Error: ' + (error.detail || 'Failed to apply weights'), 'danger');
+                }
+            } catch (error) {
+                showNotification('Network error', 'danger');
+            }
+        }
+
+        // View candidate details
+        async function viewCandidate(candidateId) {
+            try {
+                const response = await fetch(
+                    `${API_BASE_URL}/ranking/candidate/${candidateId}/rank-explanation/${driveId}`,
+                    { headers: getAuthHeaders() }
+                );
+
+                if (response.ok) {
+                    const data = await response.json();
+                    showCandidateDetails(data);
+                } else {
+                    showNotification('Could not load candidate details', 'warning');
+                }
+            } catch (error) {
+                showNotification('Network error', 'danger');
+            }
+        }
+
+        function showCandidateDetails(data) {
+            let detailsHtml = `
+                <div class="text-center mb-4">
+                    <h4>${data.candidate_name || 'Candidate'}</h4>
+                    <p class="text-muted">${data.drive || 'Drive'}</p>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>CGPA Score:</strong> ${data.component_scores?.cgpa_score ? (data.component_scores.cgpa_score * 10).toFixed(2) : 'N/A'}</p>
+                        <p><strong>Skill Match:</strong> ${data.component_scores?.skill_score ? Math.round(data.component_scores.skill_score * 100) : 0}%</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Experience:</strong> ${data.component_scores?.experience_score ? 'Yes' : 'No'}</p>
+                        <p><strong>Project Score:</strong> ${data.component_scores?.project_score ? Math.round(data.component_scores.project_score * 100) : 0}%</p>
+                    </div>
+                </div>
+                <div class="alert alert-info mt-3">
+                    <i class="fas fa-info-circle me-2"></i>
+                    ${data.rank_explanation || 'No explanation available'}
+                </div>
+            `;
+
+            Swal.fire({
+                title: 'Candidate Details',
+                html: detailsHtml,
+                width: 600,
+                confirmButtonColor: '#0A1929'
+            });
+        }
+
+        // Shortlist candidate
+        async function shortlistCandidate(candidateId) {
+            if (!confirm('Shortlist this candidate? This will send an email notification.')) return;
+
+            try {
+                // Get drive details
+                const driveRes = await fetch(`${API_BASE_URL}/admin/drives/${driveId}`, {
+                    headers: getAuthHeaders()
+                });
+
+                if (!driveRes.ok) {
+                    showNotification('Could not fetch drive details', 'danger');
+                    return;
+                }
+
+                const driveData = await driveRes.json();
+
+                // Find application for this candidate
+                const response = await fetch(`${API_BASE_URL}/admin/drives/${driveId}/applications`, {
+                    headers: getAuthHeaders()
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const application = data.applications?.find(a => a.student_user_id === candidateId);
+
+                    if (application) {
+                        const updateRes = await fetch(`${API_BASE_URL}/admin/applications/${application.id}/status`, {
+                            method: 'PUT',
+                            headers: getAuthHeaders(),
+                            body: JSON.stringify({
+                                status: 'shortlisted',
+                                send_email: true,
+                                company_name: driveData.company_name,
+                                job_title: driveData.job_title,
+                                drive_id: driveId
+                            })
+                        });
+
+                        if (updateRes.ok) {
+                            const result = await updateRes.json();
+                            if (result.email_sent) {
+                                showNotification('✅ Candidate shortlisted! Email notification sent.', 'success');
+                            } else {
+                                showNotification('✅ Candidate shortlisted! (Email queue failed)', 'warning');
+                            }
+                            loadRankings();
+                        } else {
+                            const errorData = await updateRes.json();
+                            showNotification('Failed to shortlist: ' + (errorData.detail || 'Unknown error'), 'danger');
+                        }
+                    } else {
+                        showNotification('Application not found for this candidate', 'warning');
+                    }
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showNotification('Network error', 'danger');
+            }
+        }
+
+        // Export function
+        function exportRankings() {
+            if (!currentRankings || !currentRankings.ranked_candidates) {
+                showNotification('No data to export', 'warning');
+                return;
+            }
+
+            const csv = ['Rank,Name,CGPA,Skill Match,Experience,Status,Score'];
+
+            currentRankings.ranked_candidates.forEach((c, index) => {
+                const cgpa = c.component_scores?.cgpa_score ? (c.component_scores.cgpa_score * 10).toFixed(2) : 'N/A';
+                const skill = c.component_scores?.skill_score ? Math.round(c.component_scores.skill_score * 100) : 0;
+                const exp = c.component_scores?.experience_score ? 'Yes' : 'No';
+                const status = c.application_status || 'not_applied';
+                const score = Math.round((c.rank_score || 0) * 100);
+
+                csv.push(`${index + 1},"${c.name || 'Unknown'}",${cgpa},${skill}%,${exp},${status},${score}%`);
+            });
+
+            const blob = new Blob([csv.join('\n')], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `rankings_drive_${driveId}_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+
+            showNotification('Rankings exported!', 'success');
+        }
+
+        // Initialize
+        if (checkAuth()) {
+            loadDriveDetails();
+            loadRankings();
+        }
+    </script>
+</body>
+
+</html>
