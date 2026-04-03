@@ -121,13 +121,7 @@
                 <div class="stat-value" id="shortlisted">0</div>
                 <div class="stat-label">Shortlisted</div>
             </div>
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-star"></i>
-                </div>
-                <div class="stat-value" id="selected">0</div>
-                <div class="stat-label">Selected</div>
-            </div>
+
         </div>
 
         <!-- Quick Actions -->
@@ -260,8 +254,6 @@
                     document.getElementById('applications').textContent = apps.length;
                     document.getElementById('shortlisted').textContent = 
                         apps.filter(a => a.status === 'shortlisted').length;
-                    document.getElementById('selected').textContent = 
-                        apps.filter(a => a.status === 'selected').length;
                 }
             } catch (error) {
                 console.error('Error:', error);

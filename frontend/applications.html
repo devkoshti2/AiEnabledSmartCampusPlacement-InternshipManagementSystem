@@ -80,20 +80,7 @@
                 <div class="stat-value" id="shortlistedCount">0</div>
                 <div class="stat-label">Shortlisted</div>
             </div>
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-star"></i>
-                </div>
-                <div class="stat-value" id="selectedCount">0</div>
-                <div class="stat-label">Selected</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-times-circle"></i>
-                </div>
-                <div class="stat-value" id="rejectedCount">0</div>
-                <div class="stat-label">Rejected</div>
-            </div>
+
         </div>
         
         <!-- Tabs -->
@@ -105,13 +92,7 @@
                 <a class="nav-link" data-status="applied" href="#">Applied</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" data-status="shortlisted" href="#">Shortlisted</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" data-status="selected" href="#">Selected</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" data-status="rejected" href="#">Rejected</a>
+                <a class="nav-link" data-status="shortlisted" href="#" colo>Shortlisted</a>
             </li>
         </ul>
         
@@ -201,10 +182,6 @@
             document.getElementById('totalApps').textContent = applications.length;
             document.getElementById('shortlistedCount').textContent = 
                 applications.filter(a => a.status === 'shortlisted').length;
-            document.getElementById('selectedCount').textContent = 
-                applications.filter(a => a.status === 'selected').length;
-            document.getElementById('rejectedCount').textContent = 
-                applications.filter(a => a.status === 'rejected').length;
         }
         
         function viewDrive(driveId) {

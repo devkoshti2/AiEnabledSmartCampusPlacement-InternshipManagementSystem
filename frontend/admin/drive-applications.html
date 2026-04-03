@@ -158,10 +158,7 @@
                 <div class="stat-value" id="shortlistedCount">0</div>
                 <div class="stat-label">Shortlisted</div>
             </div>
-            <div class="stat-card">
-                <div class="stat-value" id="selectedCount">0</div>
-                <div class="stat-label">Selected</div>
-            </div>
+
         </div>
         
         <!-- Applications Table -->
@@ -184,7 +181,6 @@
                                 <th>Actions</th>
                             </thead>
                         <tbody id="applicationsList">
-                            应
                                 <td colspan="7" class="text-center py-4">
                                     <div class="spinner-border text-secondary"></div>
                                     Loading...
@@ -236,7 +232,6 @@
             // Stats
             document.getElementById('totalApps').textContent = data.stats.total;
             document.getElementById('shortlistedCount').textContent = data.stats.shortlisted;
-            document.getElementById('selectedCount').textContent = data.stats.selected;
             document.getElementById('resultCount').textContent = data.applications.length;
             
             let html = '';
